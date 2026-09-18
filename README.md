@@ -19,6 +19,7 @@ then open <http://localhost:8000>. GitHub Pages serves it the same way, so nothi
 index.html         homepage: search (live results), 5 most recent notes
 courses.html       all courses grouped by year, with search + level filter
 course.html        one course — driven by ?course=<id>
+curriculum.html    curriculum explorer for both catalog years (see below)
 viewer.html        one PDF — driven by ?course=<id>&note=<filename>
 css/style.css      all styles; design tokens at the top, light theme right below
 js/main.js         all behaviour; one init function per page
@@ -66,6 +67,22 @@ tools/stamp_pdfs.py  renames + stamps new PDFs to the site template (needs pip i
    before "Lecture 10"), so start titles with "Lecture N" / "Lab N".
 
 Dates are ISO strings on purpose: they sort correctly with a plain string compare.
+
+## Curriculum
+
+`curriculum.html` serves two catalog years from one script (`js/curriculum.js`):
+
+| File | Plan | Views |
+|---|---|---|
+| `data/curriculum.json` | 2024 (admitted 2024/25+) | prerequisite map, Plan mode, study plan, compare |
+| `data/curriculum-2018.json` | 2018 (admitted 2018–2023) | requirements checklist, compare |
+
+Which views a plan gets is decided by its data, not its year: a file whose
+`dataStatus.prerequisitesSourced` is `false` gets the checklist only (no graph, no
+"what can I take"). `unlocks` is never stored — it's derived by inverting `prerequisites`.
+Courses with `verify` are drawn dashed (graph) or marked "unconfirmed" (checklist).
+"Passed" ticks are stored per plan in localStorage (`curriculum.passed.<year>`).
+The Compare tab is computed from the two files — nothing in it is hand-written.
 
 ## Later phases (not built yet)
 

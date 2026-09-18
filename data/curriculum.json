@@ -1,0 +1,455 @@
+{
+  "program": {
+    "name": "B.Sc. Computer Science",
+    "nameAr": "بكالوريوس علوم الحاسوب",
+    "university": "Kuwait University",
+    "department": "Computer Science Department, College of Science",
+    "catalogYear": "2024",
+    "appliesTo": "Students admitted in 2024/2025 or after",
+    "totalCredits": 122,
+    "source": "https://www.cs.ku.edu.kw/computer-science-major-2024-kuwait-university-2/",
+    "requirements": {
+      "university": { "total": 27, "compulsory": 15, "elective": 12 },
+      "collegeOfScience": { "total": 26, "compulsory": 12, "elective": 14 },
+      "department": { "total": 63, "core": 33, "elective": 30 },
+      "freeElectives": 6
+    },
+    "electiveRules": [
+      "CS electives total 30 credits.",
+      "At least 6 credits must be at the 300 level.",
+      "At least 6 credits must be at the 400 level.",
+      "Science electives: 14 credits from College of Science, including at least two courses with labs."
+    ]
+  },
+
+  "categories": {
+    "cs-core": { "label": "CS Core", "labelAr": "المتطلبات الالزامية", "accent": "#F2A93B" },
+    "cs-elective": { "label": "CS Elective", "labelAr": "المقررات الاختيارية", "accent": "#5FD3C4" },
+    "math-science": { "label": "College of Science", "labelAr": "متطلبات كلية العلوم", "accent": "#7FA8D4" }
+  },
+
+  "courses": [
+    {
+      "id": "0418101",
+      "short": "CS101",
+      "name": "Introduction to Computer Science",
+      "nameAr": "مقدمة في علوم الحاسوب",
+      "credits": 3,
+      "level": 100,
+      "category": "cs-core",
+      "prerequisites": [],
+      "suggestedTerm": { "year": 1, "term": "Fall" }
+    },
+    {
+      "id": "0418111",
+      "short": "CS111",
+      "name": "Discrete Mathematics for CS",
+      "nameAr": "رياضيات متقطعة",
+      "credits": 3,
+      "level": 100,
+      "category": "cs-core",
+      "prerequisites": [],
+      "suggestedTerm": { "year": 1, "term": "Fall" }
+    },
+    {
+      "id": "0418143",
+      "short": "CS143",
+      "name": "Fundamentals of Computer Programming",
+      "nameAr": "اساسيات برمجة الحاسوب",
+      "credits": 4,
+      "level": 100,
+      "category": "cs-core",
+      "prerequisites": ["0418101"],
+      "suggestedTerm": { "year": 1, "term": "Spring" }
+    },
+    {
+      "id": "0418201",
+      "short": "CS201",
+      "name": "Data Structures & Algorithms",
+      "nameAr": "بنى المعطيات و الخوارزميات",
+      "credits": 3,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": ["0418143"],
+      "suggestedTerm": { "year": 2, "term": "Fall" },
+      "note": "Largest gate in the degree — unlocks the majority of CS electives."
+    },
+    {
+      "id": "0418220",
+      "short": "CS220",
+      "name": "Programming in C & UNIX",
+      "nameAr": "البرمجة بلغة C و Unix",
+      "credits": 3,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": ["0418101"],
+      "suggestedTerm": { "year": 2, "term": "Fall" }
+    },
+    {
+      "id": "0418221",
+      "short": "CS221",
+      "name": "Computer Organization",
+      "nameAr": "تنظيم الحاسوب",
+      "credits": 4,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": ["0418220", "0418143"],
+      "suggestedTerm": { "year": 2, "term": "Spring" }
+    },
+    {
+      "id": "0418310",
+      "short": "CS310",
+      "name": "Theory of Computation I",
+      "nameAr": "نظرية الحوسبة 1",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-core",
+      "prerequisites": ["0418111", "0418201"],
+      "suggestedTerm": { "year": 2, "term": "Spring" }
+    },
+    {
+      "id": "0418320",
+      "short": "CS320",
+      "name": "Principles of Computer Systems",
+      "nameAr": "مبادئ أنظمة الحاسوب",
+      "credits": 4,
+      "level": 300,
+      "category": "cs-core",
+      "prerequisites": ["0418221"],
+      "suggestedTerm": { "year": 3, "term": "Fall" },
+      "note": "Gates the entire systems elective block."
+    },
+    {
+      "id": "0418491",
+      "short": "CS491",
+      "name": "Capstone Project I",
+      "nameAr": "مشروع التخرج 1",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-core",
+      "prerequisites": ["0418320"],
+      "conditions": [
+        { "type": "credits-passed", "minimum": 42, "label": "≥ 42 credits passed" }
+      ],
+      "suggestedTerm": { "year": 4, "term": "Fall" }
+    },
+    {
+      "id": "0418492",
+      "short": "CS492",
+      "name": "Capstone Project II",
+      "nameAr": "مشروع التخرج 2",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-core",
+      "prerequisites": ["0418491"],
+      "suggestedTerm": { "year": 4, "term": "Spring" }
+    },
+
+    {
+      "id": "0418301",
+      "short": "CS301",
+      "name": "Algorithm Design & Analysis",
+      "nameAr": "تصميم الخوارزميات و التحليل",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418111", "0418201"]
+    },
+    {
+      "id": "0418311",
+      "short": "CS311",
+      "name": "Numerical Computation",
+      "nameAr": "الحوسبة العددية",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418201", "0410102", "0410111"],
+      "verify": "Graph shows arrows from Calculus II and Linear Algebra — confirm both are required, not either/or."
+    },
+    {
+      "id": "0418315",
+      "short": "CS315",
+      "name": "Theory of Computation II",
+      "nameAr": "نظرية الحوسبة 2",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418310"]
+    },
+    {
+      "id": "0418321",
+      "short": "CS321",
+      "name": "Operating Systems",
+      "nameAr": "أنظمة التشغيل",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"]
+    },
+    {
+      "id": "0418325",
+      "short": "CS325",
+      "name": "Computer Architecture",
+      "nameAr": "هندسة بناء الحاسوب",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418221"]
+    },
+    {
+      "id": "0418331",
+      "short": "CS331",
+      "name": "Computer Networks",
+      "nameAr": "شبكات الحاسوب",
+      "credits": 4,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"]
+    },
+    {
+      "id": "0418335",
+      "short": "CS335",
+      "name": "Web Development",
+      "nameAr": "برمجة الشبكة العالمية",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418201"],
+      "alsoKnownAs": "Web Programming (name used on the dependency graph)"
+    },
+    {
+      "id": "0418346",
+      "short": "CS346",
+      "name": "Declarative Programming",
+      "nameAr": "البرمجة التوصيفية",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418201"]
+    },
+    {
+      "id": "0418347",
+      "short": "CS347",
+      "name": "Compiler Design",
+      "nameAr": "تصميم مترجم",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418310"],
+      "verify": "Graph shows a second incoming arrow from the CS221/CS320 branch — confirm whether CS221 or CS320 is also required."
+    },
+    {
+      "id": "0418365",
+      "short": "CS365",
+      "name": "Artificial Intelligence",
+      "nameAr": "الذكاء الاصطناعي",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418201"]
+    },
+    {
+      "id": "0418390",
+      "short": "CS390",
+      "name": "Software Engineering",
+      "nameAr": "هندسة البرمجيات",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418201"]
+    },
+    {
+      "id": "0418391",
+      "short": "CS391",
+      "name": "Cloud Computing Fundamentals",
+      "nameAr": "اساسيات الحوسبة السحابية",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"]
+    },
+    {
+      "id": "0418392",
+      "short": "CS392",
+      "name": "Software Design",
+      "nameAr": "تصميم البرمجيات",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": ["0418201"]
+    },
+    {
+      "id": "0418415",
+      "short": "CS415",
+      "name": "Information Theory & Cryptography",
+      "nameAr": "نظرية المعلومات و التشفير",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418310"]
+    },
+    {
+      "id": "0418416",
+      "short": "CS416",
+      "name": "Modeling & Performance Evaluation",
+      "nameAr": "النمذجة و تقييم الأداء",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"]
+    },
+    {
+      "id": "0418425",
+      "short": "CS425",
+      "name": "Distributed and Parallel Systems",
+      "nameAr": "أنظمة متوازية وموزعة",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"]
+    },
+    {
+      "id": "0418426",
+      "short": "CS426",
+      "name": "Embedded Microprocessor Systems",
+      "nameAr": "أنظمة المعالجات الدقيقة المتزامنة",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"]
+    },
+    {
+      "id": "0418427",
+      "short": "CS427",
+      "name": "Computer Security & Privacy",
+      "nameAr": "الخصوصية و أمن الكمبيوتر",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"]
+    },
+    {
+      "id": "0418455",
+      "short": "CS455",
+      "name": "Computer Graphics",
+      "nameAr": "رسوميات حاسوبية",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418201", "0410111"]
+    },
+    {
+      "id": "0418466",
+      "short": "CS466",
+      "name": "Introduction to Machine Learning",
+      "nameAr": "مقدمة في التعلم الآلي",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418201", "0480201"]
+    },
+    {
+      "id": "0418470",
+      "short": "CS470",
+      "name": "Database Systems",
+      "nameAr": "قواعد البيانات",
+      "credits": 4,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418201"]
+    },
+    {
+      "id": "0418475",
+      "short": "CS475",
+      "name": "Distributed Database Systems",
+      "nameAr": "قواعد بيانات موزعة",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": ["0418320"],
+      "verify": "Graph groups this with the CS320 systems block — confirm whether CS470 is also required."
+    },
+    {
+      "id": "0418496",
+      "short": "CS496",
+      "name": "Topics in Computer Science I",
+      "nameAr": "موضوعات في علوم الحاسوب (1)",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": [],
+      "conditions": [
+        { "type": "approval", "label": "Requires department approval" }
+      ]
+    },
+    {
+      "id": "0418497",
+      "short": "CS497",
+      "name": "Topics in Computer Science II",
+      "nameAr": "موضوعات في علوم الحاسوب (2)",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": [],
+      "conditions": [
+        { "type": "approval", "label": "Requires department approval" }
+      ]
+    },
+
+    {
+      "id": "0410101",
+      "short": "MATH101",
+      "name": "Calculus I",
+      "nameAr": "حسبان 1",
+      "credits": 3,
+      "level": 100,
+      "category": "math-science",
+      "prerequisites": [],
+      "suggestedTerm": { "year": 1, "term": "Fall" }
+    },
+    {
+      "id": "0410102",
+      "short": "MATH102",
+      "name": "Calculus II",
+      "nameAr": "حسبان 2",
+      "credits": 3,
+      "level": 100,
+      "category": "math-science",
+      "prerequisites": ["0410101"],
+      "suggestedTerm": { "year": 1, "term": "Spring" }
+    },
+    {
+      "id": "0410111",
+      "short": "MATH111",
+      "name": "Linear Algebra",
+      "nameAr": "جبر خطي",
+      "credits": 3,
+      "level": 100,
+      "category": "math-science",
+      "prerequisites": ["0410101"],
+      "suggestedTerm": { "year": 2, "term": "Fall" }
+    },
+    {
+      "id": "0480201",
+      "short": "STAT201",
+      "name": "Statistics for Science and Engineering",
+      "nameAr": "الإحصاء للعلوم و الهندسة",
+      "credits": 3,
+      "level": 200,
+      "category": "math-science",
+      "prerequisites": ["0410101"],
+      "suggestedTerm": { "year": 2, "term": "Fall" }
+    }
+  ],
+
+  "suggestedStudyPlan": [
+    { "year": 1, "term": "Fall",   "credits": 15, "slots": ["0418101", "0418111", "0410101", "ENG161", "UNIV. COMP. 1"] },
+    { "year": 1, "term": "Spring", "credits": 16, "slots": ["0418143", "0410102", "ENG162", "UNIV. COMP. 2", "SCIENCE 1"] },
+    { "year": 2, "term": "Fall",   "credits": 15, "slots": ["0418201", "0418220", "0480201", "0410111", "SCIENCE 2"] },
+    { "year": 2, "term": "Spring", "credits": 17, "slots": ["0418221", "0418310", "CS ELECTIVE", "UNIV. ELEC. 1", "SCIENCE 3"] },
+    { "year": 3, "term": "Fall",   "credits": 17, "slots": ["0418320", "CS ELECTIVE", "CS ELECTIVE", "UNIV. COMP. 3", "SCIENCE 4"] },
+    { "year": 3, "term": "Spring", "credits": 15, "slots": ["CS 300 ELECTIVE", "CS 300 ELECTIVE", "CS 400 ELECTIVE", "UNIV. ELEC. 2", "FREE ELEC. 1"] },
+    { "year": 4, "term": "Fall",   "credits": 15, "slots": ["0418491", "CS 400 ELECTIVE", "CS ELECTIVE", "UNIV. ELEC. 3", "UNIV. ELEC. 4"] },
+    { "year": 4, "term": "Spring", "credits": 12, "slots": ["0418492", "CS ELECTIVE", "CS ELECTIVE", "FREE ELEC. 2"] }
+  ]
+}

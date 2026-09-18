@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curriculum — Notes++</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  try{ document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }catch(e){}
+</script>
+</head>
+<!--
+  Curriculum explorer. Two catalog years share this page:
+    data/curriculum.json       (2024 plan)   -> prerequisite graph + study plan
+    data/curriculum-2018.json  (2018 plan)   -> requirements checklist only,
+                                               because that file has no
+                                               prerequisite data (see dataStatus)
+  js/curriculum.js decides which views to show from the data itself.
+  main.js is loaded for the theme toggle + shared helpers.
+-->
+<body data-page="curriculum">
+
+<a href="#tabs" class="skip-link">Skip to content</a>
+
+<nav aria-label="Main">
+  <a href="index.html" class="logo">NOTES<span>++</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="courses.html">Courses</a></li>
+    <li><a href="curriculum.html" aria-current="page">Curriculum</a></li>
+    <li>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">
+        <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<main>
+
+<header class="section section-first curriculum-head">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow" id="program-name">Curriculum</div>
+      <h2 id="page-title">Your degree plan</h2>
+      <p id="program-meta"></p>
+    </div>
+  </div>
+
+  <!-- Catalog year switcher. Labelled by admission year — that's how students know which plan they're on. -->
+  <div class="catalog-switch" role="group" aria-labelledby="catalog-label">
+    <span id="catalog-label">I was admitted:</span>
+    <div id="catalog-buttons"></div>
+  </div>
+
+  <!-- Student-made study aid, not advising. Keep this visible. -->
+  <div class="disclaimer" role="note">
+    <strong>Not official advising.</strong> This is a student-made study aid built from the department's published plan.
+    Always confirm requirements, prerequisites and conditions with the department before registering —
+    <a id="source-link" href="#" target="_blank" rel="noopener">official source ↗</a>.
+  </div>
+
+  <!-- Filled only when the loaded plan's dataStatus says prerequisites aren't sourced. -->
+  <div class="data-notice" id="data-notice" role="note" hidden></div>
+
+  <!-- Tabs are generated per plan: Map / Study plan (2024) or Checklist (2018), plus Compare. -->
+  <div class="tabs" id="tabs" role="tablist" aria-label="Curriculum views"></div>
+</header>
+
+<!-- ============ Prerequisite map (plans with prerequisite data) ============ -->
+<section id="panel-map" role="tabpanel" class="section curriculum-section" hidden>
+  <div class="map-toolbar">
+    <div class="mode-switch" role="group" aria-label="Mode">
+      <button type="button" class="tag-chip" data-mode="explore" aria-pressed="true">Explore</button>
+      <button type="button" class="tag-chip" data-mode="plan" aria-pressed="false">Plan: what can I take?</button>
+    </div>
+    <div class="view-switch" role="group" aria-label="View">
+      <button type="button" class="tag-chip" data-view="graph" aria-pressed="true">Graph</button>
+      <button type="button" class="tag-chip" data-view="list" aria-pressed="false">List</button>
+    </div>
+  </div>
+
+  <div class="plan-summary" id="plan-summary" hidden>
+    <div><span class="big" id="plan-credits">0</span> / <span id="plan-total">0</span> credits from courses on this map</div>
+    <div><span class="big" id="plan-available">0</span> available to take now</div>
+    <button type="button" class="btn btn-ghost btn-sm" data-reset>clear all</button>
+  </div>
+
+  <div class="legend" id="legend" aria-label="Legend"></div>
+
+  <div class="map-layout">
+    <div class="graph-scroll" id="map" tabindex="-1">
+      <div class="graph" id="graph">
+        <svg class="edges" id="edges" aria-hidden="true"></svg>
+        <div class="nodes" id="nodes"></div>
+      </div>
+    </div>
+    <aside class="detail" id="detail" aria-live="polite">
+      <div class="empty">Select a course to see its details.</div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ Requirements checklist (plans without prerequisite data) ============ -->
+<section id="panel-checklist" role="tabpanel" class="section curriculum-section" hidden>
+  <div class="plan-summary" id="check-summary">
+    <div><span class="big" id="check-credits">0</span> / <span id="check-total">0</span> credits from courses on this list</div>
+    <div><span class="big" id="check-count">0</span> courses passed</div>
+    <button type="button" class="btn btn-ghost btn-sm" data-reset>clear all</button>
+  </div>
+  <div class="check-layout">
+    <div id="checklist"></div>
+    <aside class="rules-panel" id="check-rules"></aside>
+  </div>
+</section>
+
+<!-- ============ Suggested study plan (only if the plan has one) ============ -->
+<section id="panel-plan" role="tabpanel" class="section curriculum-section" hidden>
+  <div class="section-head">
+    <div>
+      <h2>Suggested 4-year plan</h2>
+      <p>The department's recommended sequence. Grey slots are requirements that aren't a specific course (university, science and free electives).</p>
+    </div>
+  </div>
+  <div class="plan-grid" id="study-plan"></div>
+  <div class="plan-rules" id="plan-rules"></div>
+</section>
+
+<!-- ============ Compare the two catalogs ============ -->
+<section id="panel-compare" role="tabpanel" class="section curriculum-section" hidden>
+  <div class="section-head">
+    <div>
+      <h2>What changed between plans</h2>
+      <p>Computed by comparing the two catalog files course by course — useful if you transferred between plans.</p>
+    </div>
+  </div>
+  <div id="compare"></div>
+</section>
+
+</main>
+
+<footer>
+  <div>Notes++ — a shared knowledge base, one course at a time</div>
+  <div class="footer-credit">© 2026 <span>retr0</span> · built with plain HTML, CSS &amp; JS · no frameworks, no tracking</div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/curriculum.js"></script>
+</body>
+</html>

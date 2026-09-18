@@ -1,0 +1,380 @@
+{
+  "program": {
+    "name": "B.Sc. Computer Science",
+    "university": "Kuwait University",
+    "department": "Computer Science Department, College of Science",
+    "catalogYear": "2018",
+    "appliesTo": "Students admitted from Fall 2018/2019 until 2023/2024",
+    "totalCredits": 129,
+    "source": "https://www.cs.ku.edu.kw/undergraduate/undergraduate-major-sheets/",
+    "sourceDocument": "https://www.cs.ku.edu.kw/wp-content/uploads/2020/04/CS_MajorSheetEN.pdf",
+    "sourceDocumentAr": "https://www.cs.ku.edu.kw/wp-content/uploads/2021/03/CS_MajorSheet_2018_AR.pdf",
+    "requirements": {
+      "university": { "total": 27, "compulsory": 15, "elective": 12 },
+      "collegeOfScience": { "total": 24, "compulsory": 12, "elective": 12 },
+      "department": { "total": 72, "core": 57, "elective": 15 },
+      "freeElectives": 6
+    },
+    "electiveRules": [
+      "CS electives total 15 credits.",
+      "Students must take at least one of 0418335 Web Development or 0418346 Declarative Programming.",
+      "At least 6 credits of CS electives must be at the 400 level.",
+      "Science electives: 12 credits from the College of Science, but NOT in mathematics, statistics, or operations research. Must include two consecutive science courses in the same discipline, each with a laboratory.",
+      "University free electives: 6 credits, requiring pre-approval from the CS department, and not in basic mathematics, basic statistics, IT, informatics, or basic computing."
+    ]
+  },
+
+  "dataStatus": {
+    "prerequisitesSourced": false,
+    "warning": "The 2018 major sheet lists courses and credits only. The department has NOT published a course dependency graph for this catalog year — unlike the 2024 plan. Every `prerequisites` array below is empty because the data does not exist in the source, NOT because these courses have no prerequisites. They certainly do. Do not render a prerequisite graph, an 'unlocks' view, or a 'what can I take now?' feature for this plan until prerequisite data is obtained from the department or the course catalog.",
+    "arabicNames": "Not included — the English major sheet has no Arabic names. They can be transcribed from the Arabic major sheet PDF (linked in program.sourceDocumentAr).",
+    "suggestedStudyPlan": "Not published for this catalog year on the department site."
+  },
+
+  "categories": {
+    "cs-core": { "label": "CS Core", "accent": "#F2A93B" },
+    "cs-elective": { "label": "CS Elective", "accent": "#5FD3C4" },
+    "math-science": { "label": "College of Science", "accent": "#7FA8D4" }
+  },
+
+  "courses": [
+    {
+      "id": "0418111",
+      "short": "CS111",
+      "name": "Discrete Mathematics for Computer Science",
+      "credits": 3,
+      "level": 100,
+      "category": "cs-core",
+      "prerequisites": []
+    },
+    {
+      "id": "0418141",
+      "short": "CS141",
+      "name": "Computer Programming I",
+      "credits": 4,
+      "level": 100,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Replaced in the 2024 plan by 0418101 Intro. to Computer Science + 0418143 Fund. of Computer Programming."
+    },
+    {
+      "id": "0418142",
+      "short": "CS142",
+      "name": "Computer Programming II",
+      "credits": 4,
+      "level": 100,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Does not exist in the 2024 plan."
+    },
+    {
+      "id": "0418201",
+      "short": "CS201",
+      "name": "Data Structures and Algorithms",
+      "credits": 3,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": []
+    },
+    {
+      "id": "0418211",
+      "short": "CS211",
+      "name": "Theory of Computation I",
+      "credits": 3,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Renumbered to 0418310 in the 2024 plan."
+    },
+    {
+      "id": "0410211",
+      "short": "MATH211",
+      "name": "Calculus III",
+      "credits": 3,
+      "level": 200,
+      "category": "math-science",
+      "prerequisites": [],
+      "note": "Listed under Department Requirements on the major sheet, despite being a mathematics course. Dropped entirely in the 2024 plan."
+    },
+    {
+      "id": "0418220",
+      "short": "CS220",
+      "name": "Programming in C and Unix",
+      "credits": 3,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": []
+    },
+    {
+      "id": "0418221",
+      "short": "CS221",
+      "name": "Computer Systems",
+      "credits": 4,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Renamed to 'Computer Organization' in the 2024 plan."
+    },
+    {
+      "id": "0418223",
+      "short": "CS223",
+      "name": "Systems Programming",
+      "credits": 4,
+      "level": 200,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Does not exist in the 2024 plan. The department's CS320 page redirects from a /cs223/ URL, suggesting 0418320 Principles of Computer Systems is its successor."
+    },
+    {
+      "id": "0418301",
+      "short": "CS301",
+      "name": "Algorithms Design and Analysis",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Compulsory in this plan; became an elective in 2024."
+    },
+    {
+      "id": "0418311",
+      "short": "CS311",
+      "name": "Numerical Computation",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Compulsory in this plan; became an elective in 2024."
+    },
+    {
+      "id": "0418321",
+      "short": "CS321",
+      "name": "Operating Systems",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Compulsory in this plan; became an elective in 2024."
+    },
+    {
+      "id": "0418331",
+      "short": "CS331",
+      "name": "Computer Networks",
+      "credits": 4,
+      "level": 300,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Compulsory in this plan; became an elective in 2024."
+    },
+    {
+      "id": "0418390",
+      "short": "CS390",
+      "name": "Software Engineering",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Compulsory in this plan; became an elective in 2024."
+    },
+    {
+      "id": "0418470",
+      "short": "CS470",
+      "name": "Database Systems",
+      "credits": 4,
+      "level": 400,
+      "category": "cs-core",
+      "prerequisites": [],
+      "note": "Compulsory in this plan; became an elective in 2024."
+    },
+    {
+      "id": "0418491",
+      "short": "CS491",
+      "name": "Capstone Project I",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-core",
+      "prerequisites": [],
+      "conditions": [],
+      "verify": "The 2024 plan requires >= 42 credits passed for this course. Confirm whether the same threshold applied under the 2018 plan before displaying any credit condition."
+    },
+    {
+      "id": "0418492",
+      "short": "CS492",
+      "name": "Capstone Project II",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-core",
+      "prerequisites": [],
+      "verify": "Almost certainly requires 0418491, but this is not stated in the source document."
+    },
+
+    {
+      "id": "0418315",
+      "short": "CS315",
+      "name": "Theory of Computation II",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418325",
+      "short": "CS325",
+      "name": "Computer Architecture",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418335",
+      "short": "CS335",
+      "name": "Web Development",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": [],
+      "note": "Students must take this course or 0418346."
+    },
+    {
+      "id": "0418346",
+      "short": "CS346",
+      "name": "Declarative Programming",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": [],
+      "note": "Students must take this course or 0418335."
+    },
+    {
+      "id": "0418347",
+      "short": "CS347",
+      "name": "Compiler Design",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418365",
+      "short": "CS365",
+      "name": "Artificial Intelligence",
+      "credits": 3,
+      "level": 300,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418415",
+      "short": "CS415",
+      "name": "Information Theory and Cryptography",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418416",
+      "short": "CS416",
+      "name": "Modeling and Performance Evaluation",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418425",
+      "short": "CS425",
+      "name": "Distributed and Parallel Systems",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418426",
+      "short": "CS426",
+      "name": "Embedded Microprocessor Systems",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418455",
+      "short": "CS455",
+      "name": "Computer Graphics",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418475",
+      "short": "CS475",
+      "name": "Distributed Database Systems",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": []
+    },
+    {
+      "id": "0418496",
+      "short": "CS496",
+      "name": "Topics in Computer Science I",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": [],
+      "conditions": [],
+      "verify": "The 2024 plan marks this as requiring department approval. Confirm whether the same applied under the 2018 plan."
+    },
+    {
+      "id": "0418497",
+      "short": "CS497",
+      "name": "Topics in Computer Science II",
+      "credits": 3,
+      "level": 400,
+      "category": "cs-elective",
+      "prerequisites": [],
+      "conditions": [],
+      "verify": "The 2024 plan marks this as requiring department approval. Confirm whether the same applied under the 2018 plan."
+    },
+
+    {
+      "id": "0410101",
+      "short": "MATH101",
+      "name": "Calculus I",
+      "credits": 3,
+      "level": 100,
+      "category": "math-science",
+      "prerequisites": []
+    },
+    {
+      "id": "0410102",
+      "short": "MATH102",
+      "name": "Calculus II",
+      "credits": 3,
+      "level": 100,
+      "category": "math-science",
+      "prerequisites": []
+    },
+    {
+      "id": "0410111",
+      "short": "MATH111",
+      "name": "Linear Algebra",
+      "credits": 3,
+      "level": 100,
+      "category": "math-science",
+      "prerequisites": []
+    },
+    {
+      "id": "0480201",
+      "short": "STAT201",
+      "name": "Statistics for Science and Engineering",
+      "credits": 3,
+      "level": 200,
+      "category": "math-science",
+      "prerequisites": []
+    }
+  ]
+}
