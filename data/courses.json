@@ -1,0 +1,87 @@
+{
+  "_comment": "Content for the whole site. To add a course or note, edit this file. Dates are ISO (YYYY-MM-DD) so they sort as plain strings. LATER: a backend/admin panel would generate this from a database instead of a hand-edited file.",
+  "courses": [
+    {
+      "id": "dsa",
+      "code": "CS 201",
+      "name": "Data Structures & Algorithms",
+      "description": "Arrays, linked lists, trees, graphs, hashing, sorting, and how to reason about time and space complexity.",
+      "category": "CS",
+      "color": "#F2A93B",
+      "icon": "λ",
+      "notes": [
+        {
+          "title": "Arrays, lists & amortized analysis",
+          "description": "Dynamic arrays, why doubling gives O(1) amortized append, and linked-list trade-offs.",
+          "tags": ["lecture", "complexity"],
+          "filename": "dsa-01-arrays.pdf",
+          "dateAdded": "2026-09-02"
+        },
+        {
+          "title": "Hash tables",
+          "description": "Hash functions, chaining vs open addressing, load factor and resizing.",
+          "tags": ["lecture", "hashing"],
+          "filename": "dsa-02-hashing.pdf",
+          "dateAdded": "2026-09-09"
+        },
+        {
+          "title": "Problem set 1 — worked solutions",
+          "description": "Fully worked answers for PS1, including the two-pointer and sliding window questions.",
+          "tags": ["problem-set", "solutions"],
+          "filename": "dsa-ps1-solutions.pdf",
+          "dateAdded": "2026-09-15"
+        }
+      ]
+    },
+    {
+      "id": "os",
+      "code": "CS 240",
+      "name": "Operating Systems",
+      "description": "Processes and threads, scheduling, memory management, file systems, and the kernel/user boundary.",
+      "category": "CS",
+      "color": "#5FD3C4",
+      "icon": "⚙",
+      "notes": [
+        {
+          "title": "Processes & threads",
+          "description": "Process lifecycle, context switches, and what a thread actually shares with its siblings.",
+          "tags": ["lecture"],
+          "filename": "os-01-processes.pdf",
+          "dateAdded": "2026-09-05"
+        },
+        {
+          "title": "CPU scheduling cheat-sheet",
+          "description": "FCFS, SJF, round robin, and MLFQ on one page with worked Gantt charts.",
+          "tags": ["cheat-sheet", "scheduling"],
+          "filename": "os-02-scheduling.pdf",
+          "dateAdded": "2026-09-12"
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "code": "CS 255",
+      "name": "Databases",
+      "description": "The relational model, SQL, normalization, indexing, and transactions.",
+      "category": "CS",
+      "color": "#C98BF2",
+      "icon": "▤",
+      "notes": [
+        {
+          "title": "The relational model",
+          "description": "Relations, keys, and the vocabulary you need before writing any SQL.",
+          "tags": ["lecture"],
+          "filename": "db-01-relational-model.pdf",
+          "dateAdded": "2026-09-08"
+        },
+        {
+          "title": "SQL joins, visually",
+          "description": "Inner, left, right, and full outer joins with Venn diagrams and example queries.",
+          "tags": ["cheat-sheet", "sql"],
+          "filename": "db-02-joins.pdf",
+          "dateAdded": "2026-09-16"
+        }
+      ]
+    }
+  ]
+}

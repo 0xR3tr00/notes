@@ -6,200 +6,32 @@
 <title>Notes — Course Knowledge Base</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #0F2438;
-    --bg-deep: #0A1B2C;
-    --grid: rgba(244,239,228,0.05);
-    --grid-strong: rgba(244,239,228,0.09);
-    --paper: #F4EFE4;
-    --muted: #9FB3C8;
-    --muted-dim: #6E869E;
-    --accent: #F2A93B;
-    --accent2: #5FD3C4;
-    --card-bg: rgba(244,239,228,0.03);
-    --card-border: rgba(244,239,228,0.10);
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Inter', sans-serif;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:
-      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/40px 40px,
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/40px 40px,
-      var(--bg);
-    color: var(--paper);
-    font-family: var(--sans);
-    line-height: 1.5;
-    min-height: 100vh;
-  }
-  a{color:inherit;}
-  :focus-visible{outline: 2px solid var(--accent); outline-offset: 3px;}
-
-  nav{
-    position: sticky; top:0; z-index:50;
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 20px 6vw;
-    background: rgba(15,36,56,0.85);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--grid-strong);
-  }
-  .logo{
-    font-family: var(--mono); font-weight:800; letter-spacing:0.08em;
-    font-size: 15px; color: var(--paper);
-  }
-  .logo span{color: var(--accent);}
-  .nav-links{display:flex; gap:32px; list-style:none;}
-  .nav-links a{
-    font-family: var(--mono); font-size: 13px; color: var(--muted);
-    text-decoration:none; letter-spacing:0.03em;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover{color: var(--paper);}
-
-  .hero{
-    padding: 90px 6vw 70px;
-    display:grid; grid-template-columns: 1.1fr 0.9fr; gap:60px; align-items:center;
-    max-width: 1280px; margin:0 auto;
-  }
-  .eyebrow{
-    font-family: var(--mono); font-size:12px; color: var(--accent);
-    letter-spacing: 0.12em; text-transform:uppercase; margin-bottom:18px;
-    display:flex; align-items:center; gap:10px;
-  }
-  .eyebrow::before{content:''; width:24px; height:1px; background: var(--accent);}
-  h1{
-    font-family: var(--mono); font-weight:800; font-size: clamp(34px, 4.4vw, 56px);
-    line-height:1.08; letter-spacing:-0.01em; margin-bottom:22px;
-  }
-  h1 em{font-style:normal; color: var(--accent2);}
-  .hero p{
-    font-size:16px; color: var(--muted); max-width: 46ch; margin-bottom: 32px;
-  }
-  .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
-  .btn{
-    font-family: var(--mono); font-size:13px; font-weight:500;
-    padding: 12px 22px; border-radius:2px; text-decoration:none;
-    letter-spacing:0.02em; transition: all 0.2s; display:inline-block;
-    border: 1px solid transparent;
-  }
-  .btn-primary{background: var(--accent); color: var(--bg-deep); font-weight:700;}
-  .btn-primary:hover{background:#ffbe5c;}
-  .btn-ghost{border-color: var(--card-border); color: var(--paper);}
-  .btn-ghost:hover{border-color: var(--accent2); color: var(--accent2);}
-
-  /* TERMINAL SIGNATURE ELEMENT */
-  .terminal-box{
-    background: var(--bg-deep);
-    border: 1px solid var(--card-border);
-    border-radius: 6px;
-    overflow:hidden;
-  }
-  .terminal-titlebar{
-    display:flex; align-items:center; gap:8px;
-    padding: 10px 14px; background: rgba(244,239,228,0.03);
-    border-bottom: 1px solid var(--card-border);
-  }
-  .dot{width:10px; height:10px; border-radius:50%;}
-  .dot.r{background:#F2765B;} .dot.y{background:#F2C14E;} .dot.g{background:#5FD37C;}
-  .terminal-titlebar span{
-    font-family: var(--mono); font-size:11px; color: var(--muted-dim); margin-left:6px;
-  }
-  .terminal-body{
-    padding: 22px 20px 26px; font-family: var(--mono); font-size:13.5px;
-    min-height: 220px;
-  }
-  .terminal-body .line{color: var(--muted); margin-bottom:6px;}
-  .terminal-body .prompt{color: var(--accent2);}
-  .terminal-body .out{color: var(--paper); margin-bottom:4px; padding-left:0;}
-  .terminal-body .cursor{
-    display:inline-block; width:8px; height:15px; background: var(--accent);
-    animation: blink 1s step-end infinite; vertical-align:text-bottom;
-  }
-  @keyframes blink{50%{opacity:0;}}
-  @media (prefers-reduced-motion: reduce){ .cursor{animation:none;} }
-
-  .courses{
-    padding: 70px 6vw; max-width: 1280px; margin:0 auto;
-    border-top: 1px solid var(--grid-strong);
-  }
-  .section-head{
-    display:flex; align-items:baseline; gap:18px; margin-bottom:36px; flex-wrap:wrap;
-    justify-content:space-between;
-  }
-  .section-head h2{
-    font-family: var(--mono); font-size: clamp(22px,2.6vw,30px); font-weight:700;
-  }
-  .section-head p{color: var(--muted); font-size:14px; max-width:60ch; margin-top:8px;}
-
-  .course-grid{
-    display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
-    gap: 18px; margin-top: 28px;
-  }
-  .course-card{
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: 4px; padding: 24px; transition: border-color 0.2s, transform 0.2s;
-    text-decoration:none; display:flex; flex-direction:column; gap:14px;
-  }
-  .course-card:hover{ border-color: var(--accent); transform: translateY(-2px); }
-  .course-card .tag{
-    font-family: var(--mono); font-size:10px; color: var(--accent2);
-    letter-spacing:0.08em; text-transform:uppercase;
-  }
-  .course-card h3{ font-size:17px; font-weight:600; line-height:1.3; }
-  .course-card p{font-size:13px; color: var(--muted);}
-  .course-card .meta{
-    font-family: var(--mono); font-size:11px; color: var(--muted-dim);
-    display:flex; gap:14px; margin-top:auto; padding-top:10px;
-    border-top: 1px solid var(--card-border);
-  }
-  .course-card.add{
-    align-items:center; justify-content:center; text-align:center;
-    border-style: dashed; color: var(--muted-dim); min-height:150px;
-  }
-  .course-card.add .plus{
-    font-family: var(--mono); font-size:22px; color: var(--accent); margin-bottom:6px;
-  }
-
-  .contribute{
-    padding: 60px 6vw 90px; max-width:1280px; margin:0 auto;
-    border-top: 1px solid var(--grid-strong);
-  }
-  .contribute-card{
-    border: 1px dashed var(--card-border); border-radius:6px;
-    padding: 40px; text-align:center; background: rgba(244,239,228,0.02);
-  }
-  .contribute-card h3{ font-family: var(--mono); font-size:18px; margin-bottom:10px; }
-  .contribute-card p{color: var(--muted); font-size:14px; margin-bottom: 6px;}
-  .status-pill{
-    display:inline-block; font-family: var(--mono); font-size:11px;
-    color: var(--muted-dim); border:1px solid var(--card-border);
-    padding:4px 10px; border-radius:20px; margin-top:14px;
-  }
-
-  footer{
-    padding: 30px 6vw; text-align:center;
-    font-family: var(--mono); font-size:12px; color: var(--muted-dim);
-    border-top: 1px solid var(--grid-strong);
-  }
-
-  @media (max-width: 860px){
-    .hero{grid-template-columns:1fr; padding-top:50px;}
-    nav{padding:16px 5vw;}
-    .nav-links{gap:18px;}
-  }
-</style>
+<link rel="stylesheet" href="css/style.css">
+<!-- Apply the saved theme before first paint so light-mode users don't see a dark flash. -->
+<script>
+  try{ document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }catch(e){}
+</script>
+<!-- LATER (analytics): script tag would go here. -->
 </head>
-<body>
+<body data-page="home">
 
-<nav>
-  <div class="logo">NOTES<span></div>
+<a href="#courses" class="skip-link">Skip to courses</a>
+
+<nav aria-label="Main">
+  <a href="index.html" class="logo">NOTES<span>·</span>HUB</a>
   <ul class="nav-links">
     <li><a href="#courses">Courses</a></li>
+    <li class="nav-secondary"><a href="#recent">Recent</a></li>
     <li><a href="#contribute">Contribute</a></li>
+    <li>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">
+        <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
+      </button>
+    </li>
   </ul>
 </nav>
+
+<main>
 
 <section class="hero">
   <div>
@@ -212,59 +44,50 @@
     </div>
   </div>
 
-  <div class="terminal-box">
+  <div class="terminal-box" aria-hidden="true">
     <div class="terminal-titlebar">
       <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
       <span>notes — zsh</span>
     </div>
     <div class="terminal-body">
       <div class="line"><span class="prompt">$</span> ls courses/</div>
-      <div class="out">data-structures-and-algorithms/</div>
-      <div class="out">operating-systems/</div>
-      <div class="out">databases/</div>
-      <div class="out">…</div>
+      <!-- Filled from courses.json by main.js -->
+      <div id="terminal-ls"><div class="out">…</div></div>
       <div class="line" style="margin-top:14px;"><span class="prompt">$</span> <span class="cursor"></span></div>
     </div>
   </div>
 </section>
 
-<section class="courses" id="courses">
+<section class="section" id="courses">
   <div class="section-head">
     <div>
       <h2>Courses</h2>
-      <p>Each course gets its own space — notes, problem sets, and whatever else is worth sharing. Customize as you add more.</p>
+      <p>Each course gets its own space — notes, problem sets, and whatever else is worth sharing.</p>
+    </div>
+    <div class="search">
+      <label for="search" class="sr-only">Search courses and notes</label>
+      <input id="search" type="search" placeholder="search courses, notes, tags…" autocomplete="off">
     </div>
   </div>
+  <!-- aria-live: screen readers announce the count when it changes. -->
+  <div id="search-count" class="result-count" aria-live="polite"></div>
 
-  <div class="course-grid">
-    <a href="#" class="course-card">
-      <span class="tag">CS</span>
-      <h3>Data Structures & Algorithms</h3>
-      <p>Notes and worked problems — add your material here.</p>
-      <div class="meta"><span>0 files</span><span>·</span><span>Not yet set up</span></div>
-    </a>
-    <a href="#" class="course-card">
-      <span class="tag">CS</span>
-      <h3>Operating Systems</h3>
-      <p>Notes and worked problems — add your material here.</p>
-      <div class="meta"><span>0 files</span><span>·</span><span>Not yet set up</span></div>
-    </a>
-    <a href="#" class="course-card">
-      <span class="tag">CS</span>
-      <h3>Databases</h3>
-      <p>Notes and worked problems — add your material here.</p>
-      <div class="meta"><span>0 files</span><span>·</span><span>Not yet set up</span></div>
-    </a>
-    <a href="#" class="course-card add">
-      <div>
-        <div class="plus">+</div>
-        <div>Add a course</div>
-      </div>
-    </a>
-  </div>
+  <!-- Rendered from data/courses.json by main.js -->
+  <div class="course-grid" id="course-grid"></div>
 </section>
 
-<section class="contribute" id="contribute">
+<section class="section" id="recent">
+  <div class="section-head">
+    <div>
+      <h2>Recently added</h2>
+      <p>The newest notes across every course.</p>
+    </div>
+  </div>
+  <ul class="note-list" id="recent-list"></ul>
+</section>
+
+<section class="section" id="contribute">
+  <!-- LATER (uploads): this card becomes an upload form (or a link to one). -->
   <div class="contribute-card">
     <h3>Have notes worth sharing?</h3>
     <p>Student uploads aren't open yet — this section is reserved for when they are.</p>
@@ -272,9 +95,12 @@
   </div>
 </section>
 
+</main>
+
 <footer>
   Notes — a shared knowledge base, one course at a time
 </footer>
 
+<script src="js/main.js"></script>
 </body>
 </html>

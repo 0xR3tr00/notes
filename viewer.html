@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viewer — Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  try{ document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }catch(e){}
+</script>
+</head>
+<!--
+  PDF viewer. Reads ?course=<id>&note=<filename> and embeds pdfs/<filename>
+  using the browser's built-in PDF viewer. The "open" and "download" buttons
+  are the fallback for phones whose browser can't render PDFs in a frame.
+-->
+<body data-page="viewer">
+
+<nav aria-label="Main">
+  <a href="index.html" class="logo">NOTES<span>·</span>HUB</a>
+  <ul class="nav-links">
+    <li><a href="index.html#courses">← All courses</a></li>
+    <li>
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">
+        <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<main id="viewer-main">
+
+<div class="viewer-bar">
+  <div>
+    <div class="crumbs"><a id="crumb-course" href="index.html">Course</a> / note</div>
+    <h1 id="note-title">Loading…</h1>
+  </div>
+  <div class="note-actions">
+    <a id="open-link" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener">open in new tab ↗</a>
+    <a id="download-link" class="btn btn-primary btn-sm" href="#" download>download PDF</a>
+  </div>
+</div>
+
+<iframe id="pdf-frame" class="viewer-frame" title="PDF viewer"></iframe>
+
+<p class="viewer-fallback">If the PDF doesn't appear above, your browser can't display PDFs inline — use "open in new tab" or "download".</p>
+
+</main>
+
+<footer>
+  Notes — a shared knowledge base, one course at a time
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
