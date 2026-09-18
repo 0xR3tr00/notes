@@ -1,4 +1,4 @@
-# Notes·Hub
+# Notes++
 
 A static course-notes site. No build step, no frameworks — plain HTML, CSS and JS.
 
@@ -16,27 +16,54 @@ then open <http://localhost:8000>. GitHub Pages serves it the same way, so nothi
 ## Layout
 
 ```
-index.html         homepage: course grid, search, recently added
+index.html         homepage: search (live results), 5 most recent notes
+courses.html       all courses grouped by year, with search + level filter
 course.html        one course — driven by ?course=<id>
 viewer.html        one PDF — driven by ?course=<id>&note=<filename>
 css/style.css      all styles; design tokens at the top, light theme right below
 js/main.js         all behaviour; one init function per page
 data/courses.json  ALL content lives here
 pdfs/              the PDF files referenced by courses.json
+tools/stamp_pdfs.py  renames + stamps new PDFs to the site template (needs pip install pypdf)
 ```
 
 ## Add a course
 
 1. Add an object to the `courses` array in `data/courses.json`:
    `id` (used in URLs — lowercase, no spaces), `code`, `name`, `description`,
-   `category`, `color` (any CSS colour), `icon` (one character), `notes: []`.
+   `category` (Core/Elective), `level` (year 1-4, used for grouping), `color`
+   (any CSS colour — currently one per level), `icon` (1-2 characters), `notes: []`, `links: []`.
 2. That's it — the grid, the terminal `ls`, and the course page all pick it up.
 
-## Add a note
+## Add a note (lecture, lab, problem set…)
 
-1. Drop the PDF into `pdfs/`.
-2. Add an object to that course's `notes` array: `title`, `description`, `tags`,
-   `filename` (must match the file in `pdfs/` exactly), `dateAdded` (`YYYY-MM-DD`).
+1. Name the PDF with the site template and drop it into `pdfs/`:
+
+   `<CODE> - <Course name> - <Note title> - Notes++.pdf`
+
+   e.g. `CS321 - Operating Systems - Lecture 03 - CPU Scheduling - Notes++.pdf`
+   or   `CS321 - Operating Systems - Lab 02 - Threads - Notes++.pdf`
+
+   Or skip the naming: drop the file in with any name, add the JSON entry, then run
+   `python tools/stamp_pdfs.py` — it renames the file to the template, writes
+   Title/Author metadata (`Notes++`) inside the PDF, and updates the JSON for you.
+2. Add an object to that course's `notes` array:
+
+   ```json
+   {
+     "title": "Lecture 3 — CPU scheduling",
+     "type": "lecture",
+     "description": "FCFS, SJF, round robin, MLFQ.",
+     "tags": ["scheduling"],
+     "filename": "CS321 - Operating Systems - Lecture 03 - CPU Scheduling - Notes++.pdf",
+     "dateAdded": "2026-10-01"
+   }
+   ```
+
+   `type` must be one of `syllabus`, `lecture`, `lab`, `problem-set`, `other`.
+   The course page shows a separate section for each type, so lectures and labs
+   never mix. Lectures/labs/problem sets sort by title (number-aware: "Lecture 2"
+   before "Lecture 10"), so start titles with "Lecture N" / "Lab N".
 
 Dates are ISO strings on purpose: they sort correctly with a plain string compare.
 

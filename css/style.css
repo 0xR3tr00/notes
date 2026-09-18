@@ -1,5 +1,5 @@
 /* =============================================================================
-   Notes·Hub — stylesheet
+   Notes++ — stylesheet
    -----------------------------------------------------------------------------
    The design system lives in CSS custom properties ("variables") on :root.
    Every colour in the site refers to one of these, which is what makes the
@@ -23,6 +23,7 @@
   --card-border: rgba(244,239,228,0.10);
   --nav-bg: rgba(15,36,56,0.85);
   --on-accent: #0A1B2C;           /* text colour placed on top of --accent */
+  --card-shadow: none;            /* light mode adds a lift; dark relies on borders */
   --mono: 'JetBrains Mono', monospace;
   --sans: 'Inter', sans-serif;
 }
@@ -30,21 +31,22 @@
 /* Light theme: same variable names, different values.
    main.js sets data-theme="light" on <html> and everything follows. */
 :root[data-theme="light"]{
-  --bg: #F4EFE4;
-  --bg-deep: #EAE3D3;
-  --grid: rgba(15,36,56,0.06);
-  --grid-strong: rgba(15,36,56,0.12);
-  --paper: #0F2438;
-  --muted: #4A5E73;
-  --muted-dim: #7A8A9B;
-  --accent: #C77D12;              /* darker amber so it stays readable on cream */
-  --accent-hover: #A96608;
-  --accent2: #1E8F82;
-  --card-bg: rgba(15,36,56,0.03);
-  --card-bg-soft: rgba(15,36,56,0.02);
-  --card-border: rgba(15,36,56,0.14);
-  --nav-bg: rgba(244,239,228,0.88);
+  --bg: #E3DCCB;                  /* warm parchment page */
+  --bg-deep: #D3CBB7;             /* terminal / viewer frame: darker than the page */
+  --grid: rgba(15,36,56,0.07);
+  --grid-strong: rgba(15,36,56,0.16);
+  --paper: #172B40;
+  --muted: #45596E;
+  --muted-dim: #6F7F93;
+  --accent: #B8700F;              /* darker amber so it stays readable on parchment */
+  --accent-hover: #9A5C08;
+  --accent2: #1B7F73;
+  --card-bg: #F7F3EA;             /* SOLID and lighter than the page — cards sit on top */
+  --card-bg-soft: #EFEADF;
+  --card-border: rgba(15,36,56,0.24);
+  --nav-bg: rgba(227,220,203,0.96);
   --on-accent: #F4EFE4;
+  --card-shadow: 0 1px 2px rgba(15,36,56,0.10), 0 6px 18px rgba(15,36,56,0.08);
 }
 
 /* ---- 2. Base --------------------------------------------------------------- */
@@ -78,6 +80,16 @@ button{font: inherit; color: inherit; background: none; border: 0; cursor: point
   text-decoration:none; transition: top 0.15s;
 }
 .skip-link:focus{top:16px;}
+
+/* --accent-ink: the course colour as *text*. Course colours (from courses.json)
+   were picked for the dark background; on parchment they wash out, so in light
+   mode we mix each one with navy. Borders and tints keep the raw colour. */
+.course-card, .note-item, .link-card, .course-hero, .level-head, .group-head, .tag-chip[data-level]{
+  --accent-ink: var(--course-accent);
+}
+:root[data-theme="light"] :is(.course-card, .note-item, .link-card, .course-hero, .level-head, .group-head, .tag-chip[data-level]){
+  --accent-ink: color-mix(in srgb, var(--course-accent) 55%, #172B40);
+}
 
 /* ---- 3. Nav ---------------------------------------------------------------- */
 nav{
@@ -144,6 +156,7 @@ h1 em{font-style:normal; color: var(--accent2);}
 
 /* TERMINAL SIGNATURE ELEMENT */
 .terminal-box{
+  box-shadow: var(--card-shadow);
   background: var(--bg-deep);
   border: 1px solid var(--card-border);
   border-radius: 6px;
@@ -181,6 +194,7 @@ h1 em{font-style:normal; color: var(--accent2);}
   padding: 70px 6vw; max-width: 1280px; margin:0 auto;
   border-top: 1px solid var(--grid-strong);
 }
+.section-first{border-top:0; padding-top:60px;}
 .section-head{
   display:flex; align-items:baseline; gap:18px; margin-bottom:36px; flex-wrap:wrap;
   justify-content:space-between;
@@ -196,6 +210,7 @@ h1 em{font-style:normal; color: var(--accent2);}
   flex: 1 1 260px; max-width: 420px;
 }
 .search input{
+  box-shadow: var(--card-shadow);
   width:100%; font-family: var(--mono); font-size:13px; color: var(--paper);
   background: var(--card-bg); border:1px solid var(--card-border); border-radius:2px;
   padding: 11px 14px 11px 36px; transition: border-color 0.2s;
@@ -212,6 +227,7 @@ h1 em{font-style:normal; color: var(--accent2);}
 
 .tag-filters{display:flex; gap:8px; flex-wrap:wrap; margin: 6px 0 26px;}
 .tag-chip{
+  background: var(--card-bg);
   font-family: var(--mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
   color: var(--muted); border:1px solid var(--card-border); border-radius:20px;
   padding:5px 12px; transition: all 0.15s;
@@ -220,6 +236,12 @@ h1 em{font-style:normal; color: var(--accent2);}
 .tag-chip[aria-pressed="true"]{
   color: var(--on-accent); background: var(--accent2); border-color: var(--accent2);
 }
+/* Level chips carry their level colour (set inline as --course-accent). */
+.tag-chip[data-level]{color: var(--accent-ink, var(--muted)); border-color: var(--card-border);}
+.tag-chip[data-level]:hover{border-color: var(--course-accent);}
+.tag-chip[data-level][aria-pressed="true"]{
+  background: var(--course-accent); border-color: var(--course-accent); color: var(--on-accent);
+}
 
 /* ---- 7. Course cards ------------------------------------------------------- */
 .course-grid{
@@ -227,6 +249,7 @@ h1 em{font-style:normal; color: var(--accent2);}
   gap: 18px; margin-top: 28px;
 }
 .course-card{
+  box-shadow: var(--card-shadow);
   /* --course-accent is set inline per card from courses.json (see main.js). */
   --course-accent: var(--accent);
   background: var(--card-bg); border: 1px solid var(--card-border);
@@ -243,7 +266,7 @@ h1 em{font-style:normal; color: var(--accent2);}
 .course-icon{
   width:34px; height:34px; border-radius:4px; display:grid; place-items:center;
   font-family: var(--mono); font-size:15px; font-weight:700;
-  color: var(--course-accent); border:1px solid var(--course-accent);
+  color: var(--accent-ink); border:1px solid var(--course-accent);
   background: color-mix(in srgb, var(--course-accent) 12%, transparent);
 }
 .course-card h3{ font-size:17px; font-weight:600; line-height:1.3; }
@@ -261,9 +284,24 @@ h1 em{font-style:normal; color: var(--accent2);}
   font-family: var(--mono); font-size:22px; color: var(--accent); margin-bottom:6px;
 }
 
+/* Year-level heading inside the course grid — spans all columns.
+   .group-head is the same look for note-type sections on the course page. */
+.level-head, .group-head{
+  grid-column: 1 / -1;
+  font-family: var(--mono); font-size:12px; font-weight:500; letter-spacing:0.1em;
+  text-transform:uppercase; color: var(--accent-ink, var(--accent));
+  margin-top:18px; display:flex; align-items:center; gap:12px;
+}
+.level-head::after, .group-head::after{content:''; flex:1; height:1px; background: var(--card-border);}
+.level-head:first-child{margin-top:0;}
+.note-group{margin-bottom:34px;}
+.note-group .group-head{margin-bottom:14px; color: var(--muted);}
+.note-group .group-head span{color: var(--muted-dim); font-weight:400;}
+
 /* ---- 8. Note lists (course page + "recently added") ------------------------ */
 .note-list{list-style:none; display:grid; gap:12px;}
 .note-item{
+  box-shadow: var(--card-shadow);
   --course-accent: var(--accent);
   background: var(--card-bg); border:1px solid var(--card-border); border-radius:4px;
   padding: 18px 20px; display:grid; gap:10px;
@@ -273,13 +311,13 @@ h1 em{font-style:normal; color: var(--accent2);}
 .note-item:hover{border-color: var(--course-accent);}
 .note-item h3{font-size:15px; font-weight:600; line-height:1.3;}
 .note-item h3 a{text-decoration:none;}
-.note-item h3 a:hover{color: var(--course-accent);}
+.note-item h3 a:hover{color: var(--accent-ink);}
 .note-item p{font-size:13px; color: var(--muted); margin-top:4px;}
 .note-item .note-meta{
   font-family: var(--mono); font-size:11px; color: var(--muted-dim);
   display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:8px;
 }
-.note-item .note-meta .course-link{color: var(--course-accent); text-decoration:none;}
+.note-item .note-meta .course-link{color: var(--accent-ink); text-decoration:none;}
 .note-tag{
   font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
   color: var(--accent2); border:1px solid var(--card-border); border-radius:20px; padding:2px 8px;
@@ -300,10 +338,52 @@ h1 em{font-style:normal; color: var(--accent2);}
 .course-hero .course-icon{width:56px; height:56px; font-size:24px; flex-shrink:0;}
 .course-hero h1{font-size: clamp(28px, 3.6vw, 44px); margin-bottom:12px;}
 .course-hero .code{
-  font-family: var(--mono); font-size:12px; color: var(--course-accent);
+  font-family: var(--mono); font-size:12px; color: var(--accent-ink);
   letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px;
 }
 .course-hero p{color: var(--muted); font-size:15px; max-width:60ch;}
+
+/* ---- 9b. Useful links shelf (course page) ---------------------------------- */
+.link-grid{
+  list-style:none; display:grid; gap:18px; align-items:start;
+  grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+}
+.link-card{
+  box-shadow: var(--card-shadow);
+  --course-accent: var(--accent);
+  background: var(--card-bg); border:1px solid var(--card-border); border-radius:4px;
+  overflow:hidden; display:flex; flex-direction:column; transition: border-color 0.2s;
+}
+.link-card:hover{border-color: var(--course-accent);}
+.link-card.is-video{grid-column: span 1;}
+.link-body{padding:16px 18px 18px; display:flex; flex-direction:column; gap:6px; flex:1;}
+.link-card h3{font-size:15px; font-weight:600; line-height:1.3;}
+.link-card h3 a{text-decoration:none;}
+.link-card h3 a:hover{color: var(--accent-ink);}
+.link-card p{font-size:13px; color: var(--muted);}
+.link-domain{
+  font-family: var(--mono); font-size:11px; color: var(--muted-dim);
+  margin-top:auto; padding-top:10px;
+}
+
+/* YouTube thumbnail — a <button> so it's keyboard-focusable; clicking swaps
+   it for the real player (see initLinks in main.js). aspect-ratio keeps the
+   card from jumping in height when the iframe replaces the image. */
+.yt-thumb, .yt-player{
+  display:block; width:100%; aspect-ratio: 16 / 9; border:0;
+  background: var(--bg-deep); border-bottom:1px solid var(--card-border);
+}
+.yt-thumb{position:relative; padding:0; cursor:pointer; overflow:hidden;}
+.yt-thumb img{width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.3s;}
+.yt-thumb:hover img{transform: scale(1.04);}
+.yt-thumb .play{
+  position:absolute; inset:0; margin:auto; width:54px; height:54px;
+  display:grid; place-items:center; padding-left:4px;
+  border-radius:50%; background: var(--accent); color: var(--on-accent);
+  font-size:20px; box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  transition: transform 0.2s;
+}
+.yt-thumb:hover .play{transform: scale(1.08);}
 
 /* ---- 10. PDF viewer page --------------------------------------------------- */
 .viewer-bar{
@@ -326,6 +406,7 @@ h1 em{font-style:normal; color: var(--accent2);}
 
 /* ---- 11. Contribute + footer ----------------------------------------------- */
 .contribute-card{
+  box-shadow: var(--card-shadow);
   border: 1px dashed var(--card-border); border-radius:6px;
   padding: 40px; text-align:center; background: var(--card-bg-soft);
 }
@@ -341,7 +422,9 @@ footer{
   padding: 30px 6vw; text-align:center;
   font-family: var(--mono); font-size:12px; color: var(--muted-dim);
   border-top: 1px solid var(--grid-strong);
+  display:grid; gap:8px;
 }
+.footer-credit span{color: var(--accent);}
 
 /* ---- 12. Responsive -------------------------------------------------------- */
 @media (max-width: 860px){

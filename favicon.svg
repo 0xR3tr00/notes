@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Notes++ favicon. Navy tile, faint blueprint grid, "N" in cream, "++" in amber.
+       Fonts can't be loaded inside a favicon, so this uses the system monospace. -->
+  <defs>
+    <pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse">
+      <path d="M8 0H0V8" fill="none" stroke="#F4EFE4" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#0F2438"/>
+  <rect width="64" height="64" rx="12" fill="url(#grid)"/>
+  <text x="32" y="44" text-anchor="middle"
+        font-family="'JetBrains Mono', Menlo, Consolas, monospace" font-weight="800" font-size="30">
+    <tspan fill="#F4EFE4">N</tspan><tspan fill="#F2A93B">++</tspan>
+  </text>
+</svg>

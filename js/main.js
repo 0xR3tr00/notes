@@ -1,5 +1,5 @@
 /* =============================================================================
-   Notes·Hub — main.js
+   Notes++ — main.js
    -----------------------------------------------------------------------------
    One script for the whole site. It is organised top-to-bottom as:
 
@@ -7,7 +7,7 @@
      2. Data loading            (fetches data/courses.json)
      3. Small helpers           (escaping, dates, URLs)
      4. HTML "templates"        (functions that turn a course/note into HTML)
-     5. Page initialisers       (initHome / initCourse / initViewer)
+     5. Page initialisers       (initHome / initCourses / initCourse / initViewer)
      6. Boot                    (decides which initialiser to run)
 
    Each HTML page declares which page it is with <body data-page="home">, and
@@ -129,15 +129,45 @@ const pdfUrl = note => PDF_DIR + encodeURIComponent(note.filename);
 /** Case-insensitive "does this note match the query" — title, description, tags. */
 function noteMatches(note, q){
   if(!q) return true;
-  const hay = [note.title, note.description, ...note.tags].join(' ').toLowerCase();
+  const hay = [note.title, note.description, note.type, ...note.tags].join(' ').toLowerCase();
   return hay.includes(q);
 }
 
-/** A course matches if its own text matches OR any of its notes do. */
+/**
+ * Pull the 11-character video id out of any common YouTube URL shape, or
+ * return null if this isn't a YouTube link. Handles:
+ *   youtube.com/watch?v=ID   youtu.be/ID   youtube.com/shorts/ID   youtube.com/embed/ID
+ * Using the URL class (instead of regex on the raw string) means we only ever
+ * trust real youtube hosts — "notyoutube.com/watch?v=..." won't match.
+ */
+function youtubeId(url){
+  let u;
+  try{ u = new URL(url); }catch(_){ return null; }
+  const host = u.hostname.replace(/^www\.|^m\./, '');
+  let id = null;
+  if(host === 'youtu.be')                       id = u.pathname.slice(1);
+  else if(host === 'youtube.com' || host === 'youtube-nocookie.com'){
+    if(u.pathname === '/watch')                 id = u.searchParams.get('v');
+    else{
+      const m = u.pathname.match(/^\/(?:shorts|embed|live)\/([^/]+)/);
+      if(m) id = m[1];
+    }
+  }
+  return id && /^[\w-]{11}$/.test(id) ? id : null;
+}
+
+/** "https://www.example.com/path" -> "example.com" (shown on link cards). */
+function domainOf(url){
+  try{ return new URL(url).hostname.replace(/^www\./, ''); }catch(_){ return url; }
+}
+
+/** A course matches if its own text matches OR any of its notes/links do. */
 function courseMatches(course, q){
   if(!q) return true;
   const own = [course.name, course.code, course.description, course.category].join(' ').toLowerCase();
-  return own.includes(q) || course.notes.some(n => noteMatches(n, q));
+  return own.includes(q)
+    || course.notes.some(n => noteMatches(n, q))
+    || (course.links || []).some(l => (l.title + ' ' + l.description).toLowerCase().includes(q));
 }
 
 /* ---- 4. Templates -----------------------------------------------------------
@@ -188,10 +218,36 @@ function noteItemHTML(note, course, { showCourse = false } = {}){
     </li>`;
 }
 
+/**
+ * One "useful link" card. YouTube links get a thumbnail with a play button;
+ * everything else gets a compact card with the site's domain.
+ *
+ * External dependency note: the thumbnail is an <img> from img.youtube.com.
+ * It's a plain image (no scripts, no cookies) and loads lazily. The actual
+ * player is only embedded when someone clicks play — see initLinks().
+ */
+function linkCardHTML(link, course){
+  const id = youtubeId(link.url);
+  const media = id ? `
+      <button type="button" class="yt-thumb" data-yt="${esc(id)}" aria-label="Play video: ${esc(link.title)}">
+        <img src="https://img.youtube.com/vi/${esc(id)}/hqdefault.jpg" alt="" loading="lazy">
+        <span class="play" aria-hidden="true">▶</span>
+      </button>` : '';
+  return `
+    <li class="link-card ${id ? 'is-video' : ''}" style="--course-accent:${esc(course.color)}">
+      ${media}
+      <div class="link-body">
+        <h3><a href="${esc(link.url)}" target="_blank" rel="noopener">${esc(link.title)} <span aria-hidden="true">↗</span></a></h3>
+        <p>${esc(link.description || '')}</p>
+        <div class="link-domain">${id ? 'youtube.com' : esc(domainOf(link.url))}</div>
+      </div>
+    </li>`;
+}
+
 /* The "Add a course" card is static for now.
    LATER (admin panel): link this to the admin "new course" form. */
 const ADD_COURSE_HTML = `
-    <a href="#contribute" class="course-card add">
+    <a href="index.html#contribute" class="course-card add">
       <div>
         <div class="plus" aria-hidden="true">+</div>
         <div>Add a course</div>
@@ -200,34 +256,93 @@ const ADD_COURSE_HTML = `
 
 /* ---- 5. Pages --------------------------------------------------------------- */
 
-/** index.html — course grid, search, recently added. */
+/** Colour for each year-level heading on the homepage (matches the cards). */
+const LEVEL_COLOR = { 1: '#F2A93B', 2: '#5FD3C4', 3: '#C98BF2', 4: '#F2765B' };
+
+/**
+ * Note types, in the order their sections appear on a course page.
+ * `byTitle` sections sort number-aware by title (Lecture 2 before Lecture 10);
+ * the rest sort newest-first. A note with an unknown/missing type lands in "other".
+ */
+const NOTE_TYPES = [
+  { id: 'syllabus',    label: 'Syllabus',     byTitle: false },
+  { id: 'lecture',     label: 'Lectures',     byTitle: true  },
+  { id: 'lab',         label: 'Labs',         byTitle: true  },
+  { id: 'problem-set', label: 'Problem sets', byTitle: true  },
+  { id: 'other',       label: 'Other',        byTitle: false },
+];
+
+/**
+ * Level filter chips (100 / 200 / 300 / 400), shared by the home and courses
+ * pages. Renders the chips into `container` and calls `onChange` whenever the
+ * selection changes. Returns a function that gives the current level (or null).
+ * Same toggle behaviour as the tag chips: click the active one to clear.
+ */
+function initLevelFilter(container, courses, onChange){
+  const levels = [...new Set(courses.map(c => c.level))].sort();
+  let active = null;
+  container.innerHTML = levels.map(l =>
+    `<button type="button" class="tag-chip" aria-pressed="false" data-level="${l}"
+             style="--course-accent:${esc(LEVEL_COLOR[l] || '')}">${l}00-level</button>`).join('');
+  container.addEventListener('click', e => {
+    const chip = e.target.closest('.tag-chip');
+    if(!chip) return;
+    const level = Number(chip.dataset.level);
+    active = active === level ? null : level;
+    container.querySelectorAll('.tag-chip')
+      .forEach(c => c.setAttribute('aria-pressed', String(Number(c.dataset.level) === active)));
+    onChange();
+  });
+  return () => active;
+}
+
+/** Course cards grouped by year level, each group under a heading. */
+function courseGridHTML(courses){
+  const levels = [...new Set(courses.map(c => c.level))].sort();
+  return levels.map(level => {
+    const cards = courses.filter(c => c.level === level).map(courseCardHTML).join('');
+    return `<h3 class="level-head" style="--course-accent:${esc(LEVEL_COLOR[level] || '')}">${level}00-level · year ${level}</h3>${cards}`;
+  }).join('');
+}
+
+/** index.html — search (live results), recently added. */
 function initHome(courses){
-  const grid    = $('#course-grid');
-  const recent  = $('#recent-list');
   const search  = $('#search');
   const count   = $('#search-count');
-  const RECENT_N = 6;
+  const results = $('#results');
+  const RECENT_N = 5;
 
   // Recently added — newest notes across every course.
-  recent.innerHTML = recentNotes(courses, RECENT_N)
+  $('#recent-list').innerHTML = recentNotes(courses, RECENT_N)
     .map(n => noteItemHTML(n, n.course, { showCourse: true }))
     .join('') || `<li class="empty">No notes yet.</li>`;
 
-  // Render the grid for a given query (empty query = everything).
+  const getLevel = initLevelFilter($('#level-filters'), courses, render);
+
+  // With an empty query and no level picked, results are hidden and the
+  // "recently added" section below does the talking. Otherwise show matching
+  // courses and matching notes as two lists.
   function render(){
     const q = search.value.trim().toLowerCase();
-    const shown = courses.filter(c => courseMatches(c, q));
-
-    grid.innerHTML = shown.map(courseCardHTML).join('') + (q ? '' : ADD_COURSE_HTML);
-
-    if(!q){
+    const level = getLevel();
+    if(!q && !level){
+      results.hidden = true;
       count.textContent = '';
-    }else if(shown.length === 0){
-      count.textContent = `no courses match "${search.value.trim()}"`;
-    }else{
-      const noteHits = allNotes(shown).filter(n => noteMatches(n, q)).length;
-      count.textContent = `${shown.length} course${shown.length === 1 ? '' : 's'} · ${noteHits} matching note${noteHits === 1 ? '' : 's'}`;
+      return;
     }
+    const pool = courses.filter(c => !level || c.level === level);
+    const hitCourses = pool.filter(c => courseMatches(c, q));
+    const hitNotes = allNotes(pool).filter(n => noteMatches(n, q))
+      .sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
+
+    $('#results-courses').innerHTML = hitCourses.map(courseCardHTML).join('')
+      || `<div class="empty">No matching courses.</div>`;
+    $('#results-notes').innerHTML = hitNotes.map(n => noteItemHTML(n, n.course, { showCourse: true })).join('')
+      || `<li class="empty">No matching notes.</li>`;
+    $('#results-course-count').textContent = hitCourses.length;
+    $('#results-note-count').textContent = hitNotes.length;
+    results.hidden = false;
+    count.textContent = `${hitCourses.length} course${hitCourses.length === 1 ? '' : 's'} · ${hitNotes.length} note${hitNotes.length === 1 ? '' : 's'}`;
   }
 
   search.addEventListener('input', render);
@@ -235,8 +350,36 @@ function initHome(courses){
 
   // Fill the fake terminal's `ls` output from real data — small touch, but it
   // means the hero never drifts out of sync with the actual course list.
+  // Only the first few — 34 lines would push the hero off the screen.
   const ls = $('#terminal-ls');
-  if(ls) ls.innerHTML = courses.map(c => `<div class="out">${esc(c.id)}/</div>`).join('');
+  if(ls){
+    const shown = courses.slice(0, 4);
+    ls.innerHTML = shown.map(c => `<div class="out">${esc(c.id)}/</div>`).join('')
+      + `<div class="out">… ${courses.length - shown.length} more</div>`;
+  }
+}
+
+/** courses.html — the full grid with search + level filter. */
+function initCourses(courses){
+  const grid   = $('#course-grid');
+  const search = $('#search');
+  const count  = $('#search-count');
+  const getLevel = initLevelFilter($('#level-filters'), courses, render);
+
+  function render(){
+    const q = search.value.trim().toLowerCase();
+    const level = getLevel();
+    const shown = courses
+      .filter(c => !level || c.level === level)
+      .filter(c => courseMatches(c, q));
+
+    grid.innerHTML = (courseGridHTML(shown) || `<div class="empty">No courses match.</div>`)
+      + (q || level ? '' : ADD_COURSE_HTML);
+    count.textContent = (q || level) ? `${shown.length} of ${courses.length} courses` : '';
+  }
+
+  search.addEventListener('input', render);
+  render();
 }
 
 /** course.html — one course's notes with search + tag filters. */
@@ -250,7 +393,7 @@ function initCourse(courses){
     return;
   }
 
-  document.title = `${course.name} — Notes`;
+  document.title = `${course.name} — Notes++`;
 
   // Header
   const hero = $('#course-hero');
@@ -267,20 +410,34 @@ function initCourse(courses){
     .map(t => `<button type="button" class="tag-chip" aria-pressed="false" data-tag="${esc(t)}">${esc(t)}</button>`)
     .join('');
 
-  const list   = $('#note-list');
+  const groups = $('#note-groups');
   const search = $('#search');
   const count  = $('#search-count');
   let activeTag = null;   // null = no tag filter
+
+  // Number-aware title compare: "Lecture 2" < "Lecture 10".
+  const byTitle = (a, b) => a.title.localeCompare(b.title, undefined, { numeric: true });
+  const byDateDesc = (a, b) => b.dateAdded.localeCompare(a.dateAdded);
 
   function render(){
     const q = search.value.trim().toLowerCase();
     const shown = course.notes
       .filter(n => noteMatches(n, q))
-      .filter(n => !activeTag || n.tags.includes(activeTag))
-      .sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
+      .filter(n => !activeTag || n.tags.includes(activeTag));
 
-    list.innerHTML = shown.map(n => noteItemHTML(n, course)).join('')
-      || `<li class="empty">No notes match.</li>`;
+    // One <section> per note type, in NOTE_TYPES order; empty groups are skipped.
+    const known = NOTE_TYPES.map(t => t.id);
+    groups.innerHTML = NOTE_TYPES.map(type => {
+      const items = shown
+        .filter(n => (known.includes(n.type) ? n.type : 'other') === type.id)
+        .sort(type.byTitle ? byTitle : byDateDesc);
+      if(!items.length) return '';
+      return `
+        <section class="note-group" aria-labelledby="group-${type.id}">
+          <h3 class="group-head" id="group-${type.id}">${type.label} <span>${items.length}</span></h3>
+          <ul class="note-list">${items.map(n => noteItemHTML(n, course)).join('')}</ul>
+        </section>`;
+    }).join('') || `<div class="empty">No notes match.</div>`;
 
     count.textContent = `${shown.length} of ${course.notes.length} notes`;
   }
@@ -298,6 +455,31 @@ function initCourse(courses){
 
   search.addEventListener('input', render);
   render();
+
+  initLinks(course);
+}
+
+/** Useful links shelf on course.html — render, then wire up click-to-play. */
+function initLinks(course){
+  const links = course.links || [];
+  const list = $('#link-list');
+  list.innerHTML = links.map(l => linkCardHTML(l, course)).join('')
+    || `<li class="empty">No links yet for this course.</li>`;
+
+  // Click-to-play: swap the thumbnail button for the real YouTube player.
+  // Only the video someone actually clicks loads YouTube's player code —
+  // the page itself never talks to YouTube beyond the thumbnail images.
+  list.addEventListener('click', e => {
+    const btn = e.target.closest('.yt-thumb');
+    if(!btn) return;
+    const frame = document.createElement('iframe');
+    frame.className = 'yt-player';
+    frame.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.yt}?autoplay=1`;
+    frame.title = btn.getAttribute('aria-label').replace('Play video: ', '');
+    frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    frame.setAttribute('allowfullscreen', '');
+    btn.replaceWith(frame);
+  });
 }
 
 /** viewer.html — show one PDF inline, with explicit download + open-in-tab links. */
@@ -335,7 +517,7 @@ function initViewer(courses){
    LATER (CLI / tooling): nothing runs in the browser for that — it would be a
    separate script that edits data/courses.json and drops files into pdfs/.
 ---------------------------------------------------------------------------- */
-const PAGES = { home: initHome, course: initCourse, viewer: initViewer };
+const PAGES = { home: initHome, courses: initCourses, course: initCourse, viewer: initViewer };
 
 document.addEventListener('DOMContentLoaded', async () => {
   initTheme();

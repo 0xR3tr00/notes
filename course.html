@@ -6,6 +6,10 @@
 <title>Course — Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="css/style.css">
 <script>
   try{ document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }catch(e){}
@@ -21,9 +25,9 @@
 <a href="#notes" class="skip-link">Skip to notes</a>
 
 <nav aria-label="Main">
-  <a href="index.html" class="logo">NOTES<span>·</span>HUB</a>
+  <a href="index.html" class="logo">NOTES<span>++</span></a>
   <ul class="nav-links">
-    <li><a href="index.html#courses">← All courses</a></li>
+    <li><a href="courses.html">← All courses</a></li>
     <li>
       <button type="button" class="theme-toggle" aria-label="Switch to light mode">
         <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
@@ -47,7 +51,7 @@
   <div class="section-head">
     <div>
       <h2>Notes</h2>
-      <p>Click a title to read it in the browser, or download the PDF directly.</p>
+      <p>Lectures, labs and problem sets are kept apart. Click a title to read it in the browser, or download the PDF.</p>
     </div>
     <div class="search">
       <label for="search" class="sr-only">Search notes in this course</label>
@@ -59,13 +63,26 @@
   <div class="tag-filters" id="tag-filters" role="group" aria-label="Filter by tag"></div>
   <div id="search-count" class="result-count" aria-live="polite"></div>
 
-  <ul class="note-list" id="note-list"></ul>
+  <!-- One section per note type (lectures, labs, ...) rendered by main.js -->
+  <div id="note-groups"></div>
+</section>
+
+<section class="section" id="links">
+  <div class="section-head">
+    <div>
+      <h2>Useful links</h2>
+      <p>Videos, sites and references that helped. YouTube links play right here — click the thumbnail.</p>
+    </div>
+  </div>
+  <!-- Rendered from the course's "links" array by main.js (initLinks). -->
+  <ul class="link-grid" id="link-list"></ul>
 </section>
 
 </main>
 
 <footer>
-  Notes — a shared knowledge base, one course at a time
+  <div>Notes++ — a shared knowledge base, one course at a time</div>
+  <div class="footer-credit">© 2026 <span>retr0</span> · built with plain HTML, CSS &amp; JS · no frameworks, no tracking</div>
 </footer>
 
 <script src="js/main.js"></script>

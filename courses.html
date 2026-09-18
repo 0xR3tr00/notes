@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Viewer — Notes</title>
+<title>Courses — Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -16,16 +16,19 @@
 </script>
 </head>
 <!--
-  PDF viewer. Reads ?course=<id>&note=<filename> and embeds pdfs/<filename>
-  using the browser's built-in PDF viewer. The "open" and "download" buttons
-  are the fallback for phones whose browser can't render PDFs in a frame.
+  All courses, grouped by year level. Rendered from data/courses.json by
+  main.js (initCourses). Search + level chips filter the grid live.
 -->
-<body data-page="viewer">
+<body data-page="courses">
+
+<a href="#course-grid" class="skip-link">Skip to courses</a>
 
 <nav aria-label="Main">
   <a href="index.html" class="logo">NOTES<span>++</span></a>
   <ul class="nav-links">
-    <li><a href="courses.html">← All courses</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="courses.html" aria-current="page">Courses</a></li>
+    <li class="nav-secondary"><a href="index.html#contribute">Contribute</a></li>
     <li>
       <button type="button" class="theme-toggle" aria-label="Switch to light mode">
         <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
@@ -34,22 +37,26 @@
   </ul>
 </nav>
 
-<main id="viewer-main">
+<main>
 
-<div class="viewer-bar">
-  <div>
-    <div class="crumbs"><a id="crumb-course" href="index.html">Course</a> / note</div>
-    <h1 id="note-title">Loading…</h1>
+<section class="section section-first" id="courses">
+  <div class="section-head">
+    <div>
+      <h2>Courses</h2>
+      <p>Every course in the programme, grouped by year. Each one has its own page with notes, labs and links.</p>
+    </div>
+    <div class="search">
+      <label for="search" class="sr-only">Search courses</label>
+      <input id="search" type="search" placeholder="search courses, notes, tags…" autocomplete="off">
+    </div>
   </div>
-  <div class="note-actions">
-    <a id="open-link" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener">open in new tab ↗</a>
-    <a id="download-link" class="btn btn-primary btn-sm" href="#" download>download PDF</a>
-  </div>
-</div>
 
-<iframe id="pdf-frame" class="viewer-frame" title="PDF viewer"></iframe>
+  <div class="tag-filters" id="level-filters" role="group" aria-label="Filter by course level"></div>
+  <div id="search-count" class="result-count" aria-live="polite"></div>
 
-<p class="viewer-fallback">If the PDF doesn't appear above, your browser can't display PDFs inline — use "open in new tab" or "download".</p>
+  <!-- Rendered from data/courses.json by main.js -->
+  <div class="course-grid" id="course-grid"></div>
+</section>
 
 </main>
 

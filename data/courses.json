@@ -1,87 +1,830 @@
 {
-  "_comment": "Content for the whole site. To add a course or note, edit this file. Dates are ISO (YYYY-MM-DD) so they sort as plain strings. LATER: a backend/admin panel would generate this from a database instead of a hand-edited file.",
+  "_comment": "Content for the whole site. To add a note: name the PDF '<CODE> - <Course> - <Title> - Notes++.pdf', drop it in pdfs/ and add an entry to that course's notes[]. note.type must be one of: syllabus | lecture | lab | problem-set | other — the course page shows one section per type. Dates are ISO (YYYY-MM-DD) so they sort as plain strings. level = year (1-4), used for grouping and colour. LATER: a backend/admin panel would generate this from a database instead of a hand-edited file.",
   "courses": [
     {
-      "id": "dsa",
-      "code": "CS 201",
-      "name": "Data Structures & Algorithms",
-      "description": "Arrays, linked lists, trees, graphs, hashing, sorting, and how to reason about time and space complexity.",
-      "category": "CS",
+      "id": "cs101",
+      "code": "CS 101",
+      "name": "Introduction to Computer Science",
+      "description": "A tour of computing: history, how computers are built, binary, and first programming concepts.",
+      "category": "Core",
+      "level": 1,
       "color": "#F2A93B",
+      "icon": "?",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS101 - Introduction to Computer Science - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs111",
+      "code": "CS 111",
+      "name": "Discrete Mathematics for Computer Science",
+      "description": "Logic, sets, functions, proofs and induction, counting, relations and graphs — the maths behind CS.",
+      "category": "Core",
+      "level": 1,
+      "color": "#F2A93B",
+      "icon": "∑",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS111 - Discrete Mathematics for Computer Science - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs126",
+      "code": "CS 126",
+      "name": "Computer Programming I (Python)",
+      "description": "Python from zero: expressions, control flow, functions, lists and dictionaries, files.",
+      "category": "Elective",
+      "level": 1,
+      "color": "#F2A93B",
+      "icon": "py",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS126 - Computer Programming I (Python) - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs141",
+      "code": "CS 141",
+      "name": "Computer Programming I",
+      "description": "C++ fundamentals: variables, conditionals, loops, functions, recursion, arrays, basic searching and sorting.",
+      "category": "Core",
+      "level": 1,
+      "color": "#F2A93B",
+      "icon": "C+",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS141 - Computer Programming I - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs142",
+      "code": "CS 142",
+      "name": "Computer Programming II",
+      "description": "Object-oriented C++: classes, inheritance, polymorphism, operator overloading, templates and exceptions.",
+      "category": "Core",
+      "level": 1,
+      "color": "#F2A93B",
+      "icon": "C+",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS142 - Computer Programming II - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs201",
+      "code": "CS 201",
+      "name": "Data Structures and Algorithms",
+      "description": "Big-O, lists, stacks, queues, trees, hashing, heaps, graphs, and sorting — in C++.",
+      "category": "Core",
+      "level": 2,
+      "color": "#5FD3C4",
       "icon": "λ",
       "notes": [
         {
-          "title": "Arrays, lists & amortized analysis",
-          "description": "Dynamic arrays, why doubling gives O(1) amortized append, and linked-list trade-offs.",
-          "tags": ["lecture", "complexity"],
-          "filename": "dsa-01-arrays.pdf",
-          "dateAdded": "2026-09-02"
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS201 - Data Structures and Algorithms - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": [
+        {
+          "title": "MIT 6.006 — Algorithms and Computation (Lecture 1)",
+          "url": "https://www.youtube.com/watch?v=ZA-tUyM_y7s",
+          "description": "Erik Demaine's opening lecture. The best 50 minutes you can spend before the course starts."
         },
         {
-          "title": "Hash tables",
-          "description": "Hash functions, chaining vs open addressing, load factor and resizing.",
-          "tags": ["lecture", "hashing"],
-          "filename": "dsa-02-hashing.pdf",
-          "dateAdded": "2026-09-09"
+          "title": "Abdul Bari — Introduction to Algorithms",
+          "url": "https://www.youtube.com/watch?v=0IAPZzGSbME",
+          "description": "Slow, clear, whiteboard-style. Good if lectures moved too fast."
         },
         {
-          "title": "Problem set 1 — worked solutions",
-          "description": "Fully worked answers for PS1, including the two-pointer and sliding window questions.",
-          "tags": ["problem-set", "solutions"],
-          "filename": "dsa-ps1-solutions.pdf",
-          "dateAdded": "2026-09-15"
+          "title": "VisuAlgo",
+          "url": "https://visualgo.net/en",
+          "description": "Animated visualisations of every data structure and algorithm in the course."
+        },
+        {
+          "title": "Big-O Cheat Sheet",
+          "url": "https://www.bigocheatsheet.com/",
+          "description": "Time and space complexity of common structures on one page."
         }
       ]
     },
     {
-      "id": "os",
-      "code": "CS 240",
-      "name": "Operating Systems",
-      "description": "Processes and threads, scheduling, memory management, file systems, and the kernel/user boundary.",
-      "category": "CS",
+      "id": "cs211",
+      "code": "CS 211",
+      "name": "Theory of Computation I",
+      "description": "Alphabets and languages, regular expressions, finite automata, context-free grammars and pushdown automata.",
+      "category": "Core",
+      "level": 2,
+      "color": "#5FD3C4",
+      "icon": "Σ*",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS211 - Theory of Computation I - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs220",
+      "code": "CS 220",
+      "name": "Programming in C and UNIX",
+      "description": "C in a Unix environment: pointers, memory allocation, structs, file I/O, and the command-line toolchain.",
+      "category": "Core",
+      "level": 2,
+      "color": "#5FD3C4",
+      "icon": ">_",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS220 - Programming in C and UNIX - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs221",
+      "code": "CS 221",
+      "name": "Computer Systems",
+      "description": "How programs run on hardware: data representation, x86 assembly, procedures, memory hierarchy and caches.",
+      "category": "Core",
+      "level": 2,
+      "color": "#5FD3C4",
+      "icon": "01",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS221 - Computer Systems - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs223",
+      "code": "CS 223",
+      "name": "Systems Programming",
+      "description": "Linking, exceptions, virtual memory, system-level I/O, concurrency and parallel programming.",
+      "category": "Core",
+      "level": 2,
       "color": "#5FD3C4",
       "icon": "⚙",
       "notes": [
         {
-          "title": "Processes & threads",
-          "description": "Process lifecycle, context switches, and what a thread actually shares with its siblings.",
-          "tags": ["lecture"],
-          "filename": "os-01-processes.pdf",
-          "dateAdded": "2026-09-05"
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS223 - Systems Programming - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs301",
+      "code": "CS 301",
+      "name": "Algorithms Design and Analysis",
+      "description": "Divide and conquer, greedy, dynamic programming, backtracking, randomized algorithms, sorting and graph algorithms.",
+      "category": "Core",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "∀",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS301 - Algorithms Design and Analysis - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs311",
+      "code": "CS 311",
+      "name": "Numerical Computation",
+      "description": "Floating-point error, root finding, linear systems, interpolation, regression, numerical calculus — in Python.",
+      "category": "Core",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "≈",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS311 - Numerical Computation - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs315",
+      "code": "CS 315",
+      "name": "Theory of Computation II",
+      "description": "Turing machines, recursive functions, Church's thesis, decidability and the halting problem.",
+      "category": "Elective",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "⊢",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS315 - Theory of Computation II - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs321",
+      "code": "CS 321",
+      "name": "Operating Systems",
+      "description": "Processes and threads, scheduling, synchronization, deadlocks, virtual memory, file systems and security.",
+      "category": "Core",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "OS",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS321 - Operating Systems - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": [
+        {
+          "title": "Crash Course — Operating Systems",
+          "url": "https://www.youtube.com/watch?v=26QPDBe-NB8",
+          "description": "12-minute overview of what an OS actually does. Watch before week 1."
         },
         {
-          "title": "CPU scheduling cheat-sheet",
-          "description": "FCFS, SJF, round robin, and MLFQ on one page with worked Gantt charts.",
-          "tags": ["cheat-sheet", "scheduling"],
-          "filename": "os-02-scheduling.pdf",
-          "dateAdded": "2026-09-12"
+          "title": "OSTEP — Operating Systems: Three Easy Pieces",
+          "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/",
+          "description": "Free textbook. Genuinely readable; the scheduling chapters are excellent."
         }
       ]
     },
     {
-      "id": "db",
-      "code": "CS 255",
-      "name": "Databases",
-      "description": "The relational model, SQL, normalization, indexing, and transactions.",
-      "category": "CS",
+      "id": "cs322",
+      "code": "CS 322",
+      "name": "Computer Architecture",
+      "description": "MIPS instructions, processor datapaths, pipelining and hazards, memory hierarchy, I/O and parallel processors.",
+      "category": "Core",
+      "level": 3,
       "color": "#C98BF2",
+      "icon": "▦",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS322 - Computer Architecture - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs331",
+      "code": "CS 331",
+      "name": "Computer Networks",
+      "description": "The Internet top-down: HTTP, DNS, TCP/UDP, IP routing, link layer and wireless.",
+      "category": "Core",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "⇄",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS331 - Computer Networks - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs346",
+      "code": "CS 346",
+      "name": "Declarative Programming",
+      "description": "Functional programming in SML and logic programming in Prolog: types, unification, backtracking.",
+      "category": "Elective",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "λ",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS346 - Declarative Programming - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs347",
+      "code": "CS 347",
+      "name": "Compiler Design",
+      "description": "Scanners, parsers, semantic analysis, intermediate code, and code generation for a real compiler.",
+      "category": "Elective",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "⇒",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS347 - Compiler Design - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs365",
+      "code": "CS 365",
+      "name": "Artificial Intelligence",
+      "description": "Agents, search strategies, logic, reasoning under uncertainty, planning, and an introduction to learning.",
+      "category": "Elective",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "AI",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS365 - Artificial Intelligence - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs390",
+      "code": "CS 390",
+      "name": "Software Engineering",
+      "description": "Development processes, requirements, architecture and design, modeling, testing, and release management.",
+      "category": "Core",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "◧",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS390 - Software Engineering - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs391",
+      "code": "CS 391",
+      "name": "Cloud Computing Fundamentals",
+      "description": "Cloud service models, virtual machines, serverless, cloud storage and databases, big-data analytics.",
+      "category": "Elective",
+      "level": 3,
+      "color": "#C98BF2",
+      "icon": "☁",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS391 - Cloud Computing Fundamentals - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs415",
+      "code": "CS 415",
+      "name": "Information Theory and Cryptography",
+      "description": "Entropy, channels and coding, then classical and modern cryptography built on that foundation.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "⚿",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS415 - Information Theory and Cryptography - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs416",
+      "code": "CS 416",
+      "name": "Modeling and Performance Evaluation",
+      "description": "Probability, simulation techniques, queueing models and Markov processes applied to computer systems.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "σ",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS416 - Modeling and Performance Evaluation - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs425",
+      "code": "CS 425",
+      "name": "Distributed and Parallel Systems",
+      "description": "Distributed architectures, inter-process communication, clocks and synchronization, consistency, parallel algorithms.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "⋈",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS425 - Distributed and Parallel Systems - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs426",
+      "code": "CS 426",
+      "name": "Embedded Microprocessor Systems",
+      "description": "Microcontrollers and microprocessors, ARM assembly, mixing C and assembly, hardware/software interfacing.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "μ",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS426 - Embedded Microprocessor Systems - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs427",
+      "code": "CS 427",
+      "name": "Computer Security and Privacy",
+      "description": "CIA principles, authentication and access control, malware, OS security, cryptography, secure coding.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "⛨",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS427 - Computer Security and Privacy - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs455",
+      "code": "CS 455",
+      "name": "Computer Graphics",
+      "description": "Graphics pipelines, geometric transformations, viewing and projection, rendering — using OpenGL.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "◈",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS455 - Computer Graphics - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs466",
+      "code": "CS 466",
+      "name": "Introduction to Machine Learning",
+      "description": "Statistical learning, supervised and unsupervised methods, deep learning, and reinforcement learning.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "ML",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS466 - Introduction to Machine Learning - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs470",
+      "code": "CS 470",
+      "name": "Database Systems",
+      "description": "The relational model, SQL and PL/SQL, ER design and normalization, transactions and concurrency.",
+      "category": "Core",
+      "level": 4,
+      "color": "#F2765B",
       "icon": "▤",
       "notes": [
         {
-          "title": "The relational model",
-          "description": "Relations, keys, and the vocabulary you need before writing any SQL.",
-          "tags": ["lecture"],
-          "filename": "db-01-relational-model.pdf",
-          "dateAdded": "2026-09-08"
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS470 - Database Systems - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": [
+        {
+          "title": "SQLBolt — interactive SQL lessons",
+          "url": "https://sqlbolt.com/",
+          "description": "Learn SQL by writing queries in the browser. Do lessons 1–12 before the first lab."
         },
         {
-          "title": "SQL joins, visually",
-          "description": "Inner, left, right, and full outer joins with Venn diagrams and example queries.",
-          "tags": ["cheat-sheet", "sql"],
-          "filename": "db-02-joins.pdf",
-          "dateAdded": "2026-09-16"
+          "title": "Use The Index, Luke",
+          "url": "https://use-the-index-luke.com/",
+          "description": "Everything about indexing, explained for developers rather than DBAs."
         }
       ]
+    },
+    {
+      "id": "cs475",
+      "code": "CS 475",
+      "name": "Distributed Database Systems",
+      "description": "Distributed DBMS architecture, fragmentation and allocation, distributed query processing and transactions.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "▥",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS475 - Distributed Database Systems - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs491",
+      "code": "CS 491",
+      "name": "Capstone Project I",
+      "description": "Project proposal and prototype, plus professional ethics, privacy, intellectual property and usability.",
+      "category": "Core",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "◐",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS491 - Capstone Project I - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs492",
+      "code": "CS 492",
+      "name": "Capstone Project II",
+      "description": "Building and delivering the capstone with Scrum: backlogs, estimation, reports and final presentation.",
+      "category": "Core",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "●",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS492 - Capstone Project II - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs496",
+      "code": "CS 496",
+      "name": "Topics in Computer Science I",
+      "description": "Special-topics elective; content announced by the instructor each semester.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "…",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS496 - Topics in Computer Science I - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "cs497",
+      "code": "CS 497",
+      "name": "Topics in Computer Science II",
+      "description": "Special-topics elective; content announced by the instructor each semester.",
+      "category": "Elective",
+      "level": 4,
+      "color": "#F2765B",
+      "icon": "…",
+      "notes": [
+        {
+          "title": "Course description (official syllabus)",
+          "type": "syllabus",
+          "description": "Credit hours, coordinator, textbook, weekly topics and grading scheme from the department's course sheet.",
+          "tags": [
+            "syllabus"
+          ],
+          "filename": "CS497 - Topics in Computer Science II - Course Description - Notes++.pdf",
+          "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
     }
   ]
 }
