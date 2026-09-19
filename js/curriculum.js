@@ -557,9 +557,12 @@ async function initCurriculum(){
   $('#catalog-buttons').innerHTML = CATALOGS.map(c =>
     `<button type="button" class="tag-chip" data-catalog="${c.id}" aria-pressed="false">${esc(c.label)}</button>`).join('');
 
+  // ?catalog=<id> (from the home page) beats the saved choice; ?mode=plan opens Plan mode.
+  const params = new URLSearchParams(location.search);
   let saved = null;
   try{ saved = localStorage.getItem(CATALOG_KEY); }catch(_){}
-  activate(saved || CATALOGS[0].id);
+  activate(params.get('catalog') || saved || CATALOGS[0].id);
+  if(params.get('mode') === 'plan' && hasGraph(DATA)) setMode('plan');
 
   // --- events (delegated)
   document.addEventListener('click', e => {
@@ -583,6 +586,34 @@ async function initCurriculum(){
   });
 }
 
+/**
+ * For the home page: a summary of the visitor's saved plan, using the SAME
+ * availability rules as the curriculum page (no duplicated logic). Returns
+ * null when no plan has been chosen yet. Loads only the chosen catalog file.
+ */
+async function planSummary(){
+  let id = null;
+  try{ id = localStorage.getItem(CATALOG_KEY); }catch(_){}
+  const cat = CATALOGS.find(c => c.id === id);
+  if(!cat) return null;
+  const data = await fetch(cat.url).then(r => r.json());
+  CATALOG = cat; DATA = data; ALL.set(cat.id, data);
+  buildGraph(data); loadPassed();
+  const graph = hasGraph(data);
+  return {
+    catalog: cat,
+    total: data.program.totalCredits,
+    credits: creditsPassed(),
+    passedCount: passed.size,
+    hasGraph: graph,
+    // Only plans with prerequisite data can say what's available.
+    available: graph ? data.courses.filter(c => availability(c.id).state === 'available') : null,
+  };
+}
+
+// Only boot the full page on curriculum.html; the home page loads this file
+// for planSummary() alone.
+if(document.body.dataset.page === 'curriculum')
 document.addEventListener('DOMContentLoaded', () => {
   initCurriculum().catch(err => {
     console.error(err);

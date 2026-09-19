@@ -305,7 +305,7 @@ function courseGridHTML(courses){
   }).join('');
 }
 
-/** index.html — search (live results), recently added. */
+/** index.html — search (live results), your plan, recently added. */
 function initHome(courses){
   const search  = $('#search');
   const count   = $('#search-count');
@@ -319,9 +319,8 @@ function initHome(courses){
 
   const getLevel = initLevelFilter($('#level-filters'), courses, render);
 
-  // With an empty query and no level picked, results are hidden and the
-  // "recently added" section below does the talking. Otherwise show matching
-  // courses and matching notes as two lists.
+  // With an empty query and no level picked, results are hidden and the rest
+  // of the page shows. Otherwise show matching courses and notes as two lists.
   function render(){
     const q = search.value.trim().toLowerCase();
     const level = getLevel();
@@ -344,19 +343,87 @@ function initHome(courses){
     results.hidden = false;
     count.textContent = `${hitCourses.length} course${hitCourses.length === 1 ? '' : 's'} · ${hitNotes.length} note${hitNotes.length === 1 ? '' : 's'}`;
   }
-
   search.addEventListener('input', render);
   render();
 
-  // Fill the fake terminal's `ls` output from real data — small touch, but it
-  // means the hero never drifts out of sync with the actual course list.
-  // Only the first few — 34 lines would push the hero off the screen.
-  const ls = $('#terminal-ls');
-  if(ls){
-    const shown = courses.slice(0, 4);
-    ls.innerHTML = shown.map(c => `<div class="out">${esc(c.id)}/</div>`).join('')
-      + `<div class="out">… ${courses.length - shown.length} more</div>`;
+  // Terminal readout — real counts, so the hero is never out of date.
+  const notes = allNotes(courses);
+  const links = courses.reduce((s, c) => s + (c.links || []).length, 0);
+  const latest = notes.map(n => n.dateAdded).sort().at(-1);
+  $('#terminal-stats').innerHTML = [
+    `${courses.length} courses`,
+    `${notes.length} notes`,
+    `${links} useful links`,
+    latest ? `last update ${formatDate(latest)}` : '',
+  ].filter(Boolean).map(t => `<div class="out">${esc(t)}</div>`).join('');
+  $('#start-courses-count').textContent =
+    `All ${courses.length} courses, grouped 100- to 400-level, each with its syllabus, notes and links.`;
+
+  renderPlanBlock(courses);
+}
+
+/**
+ * "Your plan" block on the home page. Reads the curriculum page's saved state
+ * through planSummary() (curriculum.js). First-time visitors get a prompt to
+ * pick their plan instead.
+ */
+async function renderPlanBlock(courses){
+  const box = $('#plan-block');
+  if(typeof planSummary !== 'function'){ box.innerHTML = ''; return; }
+  let p = null;
+  try{ p = await planSummary(); }catch(err){ console.error(err); }
+
+  if(!p){
+    box.innerHTML = `
+      <div class="plan-prompt">
+        <div>
+          <h2>Which plan are you on?</h2>
+          <p>Pick your admission year once and this page will track your progress.</p>
+        </div>
+        <div class="plan-prompt-actions">
+          <a class="btn btn-primary btn-sm" href="curriculum.html?catalog=2024">Admitted 2024/25 or later</a>
+          <a class="btn btn-ghost btn-sm" href="curriculum.html?catalog=2018">Admitted 2018 – 2023</a>
+        </div>
+      </div>`;
+    return;
   }
+
+  const byCode = new Map(courses.map(c => [c.code.replace(' ', ''), c]));
+  const chips = (p.available || []).map(c => {
+    const notes = byCode.get(c.short);
+    return notes
+      ? `<a class="note-tag chip-link has-notes" href="${courseUrl(notes)}" title="${esc(c.name)} — notes">${esc(c.short)} ≡</a>`
+      : `<span class="note-tag" title="${esc(c.name)}">${esc(c.short)}</span>`;
+  }).join(' ');
+
+  box.innerHTML = `
+    <div class="section-head">
+      <div>
+        <h2>Your plan</h2>
+        <p>Admitted ${esc(p.catalog.label)} · ${p.passedCount} course${p.passedCount === 1 ? '' : 's'} ticked as passed</p>
+      </div>
+      <a href="curriculum.html" class="btn btn-ghost btn-sm">open plan →</a>
+    </div>
+    <div class="dash">
+      <div class="dash-card">
+        <span class="big">${p.credits}</span><span class="of">/ ${p.total}</span>
+        <div class="label">credits from courses on the map</div>
+      </div>
+      ${p.hasGraph ? `
+      <div class="dash-card">
+        <span class="big">${p.available.length}</span>
+        <div class="label">courses available to you now</div>
+        <a href="curriculum.html?mode=plan" class="btn btn-ghost btn-sm">update what I've passed</a>
+      </div>
+      <div class="dash-card dash-wide">
+        <div class="label">You can take now <span class="muted">(≡ = has notes here)</span></div>
+        <div class="chips">${chips || '<span class="muted">Nothing yet — tick your passed courses on the map.</span>'}</div>
+      </div>` : `
+      <div class="dash-card dash-wide">
+        <div class="label">This plan has no published prerequisite data, so the site can't say what's open to you — but your checklist is saved.</div>
+        <a href="curriculum.html" class="btn btn-ghost btn-sm">open checklist</a>
+      </div>`}
+    </div>`;
 }
 
 /** courses.html — the full grid with search + level filter. */

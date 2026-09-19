@@ -16,7 +16,7 @@ then open <http://localhost:8000>. GitHub Pages serves it the same way, so nothi
 ## Layout
 
 ```
-index.html         homepage: search (live results), 5 most recent notes
+index.html         home: search (live results), 'Your plan' dashboard, start-here cards, 5 recent notes
 courses.html       all courses grouped by year, with search + level filter
 course.html        one course — driven by ?course=<id>
 curriculum.html    curriculum explorer for both catalog years (see below)
