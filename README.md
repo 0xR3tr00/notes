@@ -20,10 +20,12 @@ index.html         home: search (live results), 'Your plan' dashboard, start-her
 courses.html       all courses grouped by year, with search + level filter
 course.html        one course — driven by ?course=<id>
 curriculum.html    curriculum explorer for both catalog years (see below)
+resources.html     general links (department site, study sites) from data/resources.json
 viewer.html        one PDF — driven by ?course=<id>&note=<filename>
 css/style.css      all styles; design tokens at the top, light theme right below
 js/main.js         all behaviour; one init function per page
-data/courses.json  ALL content lives here
+data/courses.json  all course + note + course-link content
+data/resources.json  general (non-course) links, grouped
 pdfs/              the PDF files referenced by courses.json
 tools/stamp_pdfs.py  renames + stamps new PDFs to the site template (needs pip install pypdf)
 ```
@@ -61,7 +63,7 @@ tools/stamp_pdfs.py  renames + stamps new PDFs to the site template (needs pip i
    }
    ```
 
-   `type` must be one of `syllabus`, `lecture`, `lab`, `problem-set`, `other`.
+   `type` must be one of `syllabus`, `lecture`, `lab`, `problem-set`, `review`, `exam`, `reference`, `other`.
    The course page shows a separate section for each type, so lectures and labs
    never mix. Lectures/labs/problem sets sort by title (number-aware: "Lecture 2"
    before "Lecture 10"), so start titles with "Lecture N" / "Lab N".

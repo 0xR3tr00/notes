@@ -29,6 +29,7 @@
     <li><a href="index.html">Home</a></li>
     <li><a href="courses.html" aria-current="page">Courses</a></li>
     <li><a href="curriculum.html">Curriculum</a></li>
+    <li><a href="resources.html">Resources</a></li>
     <li>
       <button type="button" class="theme-toggle" aria-label="Switch to light mode">
         <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
@@ -51,7 +52,10 @@
     </div>
   </div>
 
-  <div class="tag-filters" id="level-filters" role="group" aria-label="Filter by course level"></div>
+  <div class="filter-rows">
+    <div class="tag-filters" id="subject-filters" role="group" aria-label="Filter by subject"></div>
+    <div class="tag-filters" id="level-filters" role="group" aria-label="Filter by course level"></div>
+  </div>
   <div id="search-count" class="result-count" aria-live="polite"></div>
 
   <!-- Rendered from data/courses.json by main.js -->

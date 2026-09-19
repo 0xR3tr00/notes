@@ -110,10 +110,10 @@ html{scrollbar-color: var(--scroll-thumb) var(--bg-deep);}
 /* --accent-ink: the course colour as *text*. Course colours (from courses.json)
    were picked for the dark background; on parchment they wash out, so in light
    mode we mix each one with navy. Borders and tints keep the raw colour. */
-.course-card, .note-item, .link-card, .course-hero, .level-head, .group-head, .tag-chip[data-level]{
+.course-card, .note-item, .link-card, .course-hero, .level-head, .group-head, .tag-chip[data-value]{
   --accent-ink: var(--course-accent);
 }
-:root[data-theme="light"] :is(.course-card, .note-item, .link-card, .course-hero, .level-head, .group-head, .tag-chip[data-level]){
+:root[data-theme="light"] :is(.course-card, .note-item, .link-card, .course-hero, .level-head, .group-head, .tag-chip[data-value]){
   --accent-ink: color-mix(in srgb, var(--course-accent) 55%, #172B40);
 }
 
@@ -262,10 +262,10 @@ h1 em{font-style:normal; color: var(--accent2);}
 .tag-chip[aria-pressed="true"]{
   color: var(--on-accent); background: var(--accent2); border-color: var(--accent2);
 }
-/* Level chips carry their level colour (set inline as --course-accent). */
-.tag-chip[data-level]{color: var(--accent-ink, var(--muted)); border-color: var(--card-border);}
-.tag-chip[data-level]:hover{border-color: var(--course-accent);}
-.tag-chip[data-level][aria-pressed="true"]{
+/* Filter chips (level, subject) carry their colour inline as --course-accent. */
+.tag-chip[data-value]{color: var(--accent-ink, var(--muted)); border-color: var(--card-border);}
+.tag-chip[data-value]:hover{border-color: var(--course-accent);}
+.tag-chip[data-value][aria-pressed="true"]{
   background: var(--course-accent); border-color: var(--course-accent); color: var(--on-accent);
 }
 
@@ -354,6 +354,41 @@ h1 em{font-style:normal; color: var(--accent2);}
   font-family: var(--mono); font-size:13px; color: var(--muted-dim);
   border:1px dashed var(--card-border); border-radius:4px; padding: 28px; text-align:center;
 }
+
+/* ---- 8b. Folders on the course page ------------------------------------------
+   <details> styled as a folder card. The triangle is drawn with CSS so it
+   matches the design instead of the browser default. */
+.folder{
+  background: var(--card-bg); border:1px solid var(--card-border); border-radius:6px;
+  margin-bottom:12px; box-shadow: var(--card-shadow); transition: border-color 0.15s;
+}
+.folder:hover, .folder[open]{border-color: color-mix(in srgb, var(--course-accent) 55%, var(--card-border));}
+.folder > summary{
+  list-style:none; cursor:pointer; user-select:none;
+  display:flex; align-items:center; gap:12px; padding:16px 20px;
+  font-family: var(--mono); font-size:14px; font-weight:700; color: var(--paper);
+}
+.folder > summary::-webkit-details-marker{display:none;}
+.folder > summary:focus-visible{outline:2px solid var(--accent); outline-offset:-4px; border-radius:6px;}
+.folder > summary .count{font-weight:400; color: var(--muted-dim); font-size:12px;}
+.folder > summary::after{                       /* chevron on the right */
+  content:''; margin-left:auto; width:8px; height:8px;
+  border-right:2px solid var(--muted-dim); border-bottom:2px solid var(--muted-dim);
+  transform: rotate(-45deg); transition: transform 0.15s;
+}
+.folder[open] > summary::after{transform: rotate(45deg);}
+.folder-icon{                                    /* little folder tab, in the course colour */
+  width:18px; height:14px; border-radius:2px; position:relative; flex-shrink:0;
+  background: color-mix(in srgb, var(--course-accent) 75%, var(--card-bg));
+}
+.folder-icon::before{
+  content:''; position:absolute; top:-4px; left:0; width:8px; height:5px; border-radius:2px 2px 0 0;
+  background: color-mix(in srgb, var(--course-accent) 75%, var(--card-bg));
+}
+.folder > .note-list{padding: 0 16px 16px;}
+.folder.sub{margin: 0 16px 12px; background: var(--card-bg-soft);}
+.folder.sub > summary{padding:12px 16px; font-size:13px;}
+.folder.sub > .note-list{padding: 0 12px 12px;}
 
 /* ---- 9. Course page header ------------------------------------------------- */
 .course-hero{
@@ -713,6 +748,14 @@ table.cmp td.mono{font-family: var(--mono); font-size:12px; color: var(--accent2
   .hero-compact{padding-top:40px;}
   .dash-wide{grid-column: auto;}
 }
+
+.filter-rows{display:flex; gap:6px 18px; flex-wrap:wrap; align-items:center;}
+.filter-rows .tag-filters{margin:0;}
+.filter-rows .tag-filters + .tag-filters{padding-left:18px; border-left:1px solid var(--card-border);}
+.hero-compact .filter-rows{margin-bottom:8px;}
+
+.resource-group{margin-bottom:36px;}
+.resource-group .group-head{margin-bottom:14px;}
 
 /* ---- 12. Responsive -------------------------------------------------------- */
 @media (max-width: 860px){

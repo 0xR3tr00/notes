@@ -239,7 +239,7 @@ function linkCardHTML(link, course){
       <div class="link-body">
         <h3><a href="${esc(link.url)}" target="_blank" rel="noopener">${esc(link.title)} <span aria-hidden="true">↗</span></a></h3>
         <p>${esc(link.description || '')}</p>
-        <div class="link-domain">${id ? 'youtube.com' : esc(domainOf(link.url))}</div>
+        <div class="link-domain">${id ? 'youtube.com' : esc(domainOf(link.url))}${link.subject ? ` <span class="note-tag">${esc(link.subject)}</span>` : ''}</div>
       </div>
     </li>`;
 }
@@ -269,31 +269,59 @@ const NOTE_TYPES = [
   { id: 'lecture',     label: 'Lectures',     byTitle: true  },
   { id: 'lab',         label: 'Labs',         byTitle: true  },
   { id: 'problem-set', label: 'Problem sets', byTitle: true  },
+  { id: 'review',      label: 'Reviews & summaries', byTitle: true },
+  { id: 'exam',        label: 'Past exams',   byTitle: true,
+    // Sub-folders: a note goes in the first one whose tag it carries, else "Other".
+    subfolders: [{ tag: 'first-exam', label: 'First exam' }, { tag: 'second-exam', label: 'Second exam' }, { tag: 'final', label: 'Final exam' }] },
+  { id: 'reference',   label: 'Cheat-sheets & references', byTitle: true },
   { id: 'other',       label: 'Other',        byTitle: false },
 ];
 
 /**
- * Level filter chips (100 / 200 / 300 / 400), shared by the home and courses
- * pages. Renders the chips into `container` and calls `onChange` whenever the
- * selection changes. Returns a function that gives the current level (or null).
- * Same toggle behaviour as the tag chips: click the active one to clear.
+ * A row of toggle chips. `items` = [{ value, label, color }]. Renders into
+ * `container`, calls `onChange` when the selection changes, and returns a
+ * function giving the active value (or null). Click the active chip to clear.
+ * Used for the level filter and the subject filter — same behaviour, one place.
  */
-function initLevelFilter(container, courses, onChange){
-  const levels = [...new Set(courses.map(c => c.level))].sort();
+function initChipFilter(container, items, onChange){
   let active = null;
-  container.innerHTML = levels.map(l =>
-    `<button type="button" class="tag-chip" aria-pressed="false" data-level="${l}"
-             style="--course-accent:${esc(LEVEL_COLOR[l] || '')}">${l}00-level</button>`).join('');
+  container.innerHTML = items.map(it =>
+    `<button type="button" class="tag-chip" aria-pressed="false" data-value="${esc(it.value)}"
+             style="--course-accent:${esc(it.color || '')}">${esc(it.label)}</button>`).join('');
   container.addEventListener('click', e => {
     const chip = e.target.closest('.tag-chip');
     if(!chip) return;
-    const level = Number(chip.dataset.level);
-    active = active === level ? null : level;
+    active = active === chip.dataset.value ? null : chip.dataset.value;
     container.querySelectorAll('.tag-chip')
-      .forEach(c => c.setAttribute('aria-pressed', String(Number(c.dataset.level) === active)));
+      .forEach(c => c.setAttribute('aria-pressed', String(c.dataset.value === active)));
     onChange();
   });
   return () => active;
+}
+
+/** Level chips (100 / 200 / 300 / 400). Returns a getter for the active level as a number. */
+function initLevelFilter(container, courses, onChange){
+  const levels = [...new Set(courses.map(c => c.level))].sort();
+  const get = initChipFilter(container, levels.map(l => ({ value: String(l), label: `${l}00-level`, color: LEVEL_COLOR[l] })), onChange);
+  return () => (get() === null ? null : Number(get()));
+}
+
+/** "CS 201" -> "CS". The subject is whatever comes before the space in the code. */
+const subjectOf = course => course.code.split(' ')[0];
+
+/** Subject chips (CS / MATH / …), derived from course codes. Returns a getter. */
+function initSubjectFilter(container, courses, onChange){
+  const subjects = [...new Set(courses.map(subjectOf))].sort();
+  if(subjects.length < 2){ container.hidden = true; return () => null; }   // pointless with one subject
+  return initChipFilter(container, subjects.map(sub => {
+    const sample = courses.find(c => subjectOf(c) === sub);
+    return { value: sub, label: sub, color: sample.category === 'Science' ? sample.color : 'var(--accent2)' };
+  }), onChange);
+}
+
+/** Apply both filters to a course list. */
+function filterCourses(courses, level, subject){
+  return courses.filter(c => (!level || c.level === level) && (!subject || subjectOf(c) === subject));
 }
 
 /** Course cards grouped by year level, each group under a heading. */
@@ -318,18 +346,19 @@ function initHome(courses){
     .join('') || `<li class="empty">No notes yet.</li>`;
 
   const getLevel = initLevelFilter($('#level-filters'), courses, render);
+  const getSubject = initSubjectFilter($('#subject-filters'), courses, render);
 
-  // With an empty query and no level picked, results are hidden and the rest
+  // With an empty query and no chip picked, results are hidden and the rest
   // of the page shows. Otherwise show matching courses and notes as two lists.
   function render(){
     const q = search.value.trim().toLowerCase();
-    const level = getLevel();
-    if(!q && !level){
+    const level = getLevel(), subject = getSubject();
+    if(!q && !level && !subject){
       results.hidden = true;
       count.textContent = '';
       return;
     }
-    const pool = courses.filter(c => !level || c.level === level);
+    const pool = filterCourses(courses, level, subject);
     const hitCourses = pool.filter(c => courseMatches(c, q));
     const hitNotes = allNotes(pool).filter(n => noteMatches(n, q))
       .sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
@@ -432,17 +461,17 @@ function initCourses(courses){
   const search = $('#search');
   const count  = $('#search-count');
   const getLevel = initLevelFilter($('#level-filters'), courses, render);
+  const getSubject = initSubjectFilter($('#subject-filters'), courses, render);
 
   function render(){
     const q = search.value.trim().toLowerCase();
-    const level = getLevel();
-    const shown = courses
-      .filter(c => !level || c.level === level)
-      .filter(c => courseMatches(c, q));
+    const level = getLevel(), subject = getSubject();
+    const filtering = q || level || subject;
+    const shown = filterCourses(courses, level, subject).filter(c => courseMatches(c, q));
 
     grid.innerHTML = (courseGridHTML(shown) || `<div class="empty">No courses match.</div>`)
-      + (q || level ? '' : ADD_COURSE_HTML);
-    count.textContent = (q || level) ? `${shown.length} of ${courses.length} courses` : '';
+      + (filtering ? '' : ADD_COURSE_HTML);
+    count.textContent = filtering ? `${shown.length} of ${courses.length} courses` : '';
   }
 
   search.addEventListener('input', render);
@@ -465,6 +494,7 @@ function initCourse(courses){
   // Header
   const hero = $('#course-hero');
   hero.style.setProperty('--course-accent', course.color);
+  $('#course-main').style.setProperty('--course-accent', course.color);   // folders, links etc. inherit it
   $('#course-icon').textContent = course.icon;
   $('#course-code').textContent = `${course.category} · ${course.code}`;
   $('#course-name').textContent = course.name;
@@ -492,19 +522,45 @@ function initCourse(courses){
       .filter(n => noteMatches(n, q))
       .filter(n => !activeTag || n.tags.includes(activeTag));
 
-    // One <section> per note type, in NOTE_TYPES order; empty groups are skipped.
+    // One folder (<details>) per note type, in NOTE_TYPES order; empty ones are
+    // skipped. Folders start closed so a course with 60 files is still scannable;
+    // when the visitor is searching or has a tag picked, every folder opens so
+    // the matches are visible. <details>/<summary> is native HTML: keyboard
+    // accessible and screen-reader friendly with no JavaScript.
     const known = NOTE_TYPES.map(t => t.id);
+    const filtering = Boolean(q || activeTag);
+    const list = items => `<ul class="note-list">${items.map(n => noteItemHTML(n, course)).join('')}</ul>`;
+
     groups.innerHTML = NOTE_TYPES.map(type => {
       const items = shown
         .filter(n => (known.includes(n.type) ? n.type : 'other') === type.id)
         .sort(type.byTitle ? byTitle : byDateDesc);
       if(!items.length) return '';
+
+      let body;
+      if(type.subfolders){
+        // Split into sub-folders by tag; anything unmatched goes to "Other".
+        const buckets = type.subfolders.map(sf => ({ ...sf, items: [] }));
+        const rest = [];
+        for(const n of items){
+          const b = buckets.find(sf => n.tags.includes(sf.tag));
+          (b ? b.items : rest).push(n);
+        }
+        if(rest.length) buckets.push({ label: 'Other', items: rest });
+        body = buckets.filter(b => b.items.length).map(b => `
+          <details class="folder sub" ${filtering ? 'open' : ''}>
+            <summary><span class="folder-icon" aria-hidden="true"></span>${esc(b.label)} <span class="count">${b.items.length}</span></summary>
+            ${list(b.items)}
+          </details>`).join('');
+      }else{
+        body = list(items);
+      }
       return `
-        <section class="note-group" aria-labelledby="group-${type.id}">
-          <h3 class="group-head" id="group-${type.id}">${type.label} <span>${items.length}</span></h3>
-          <ul class="note-list">${items.map(n => noteItemHTML(n, course)).join('')}</ul>
-        </section>`;
-    }).join('') || `<div class="empty">No notes match.</div>`;
+        <details class="folder" ${filtering ? 'open' : ''}>
+          <summary><span class="folder-icon" aria-hidden="true"></span>${type.label} <span class="count">${items.length}</span></summary>
+          ${body}
+        </details>`;
+    }).join('') || `<div class="empty">${course.notes.length ? 'No notes match.' : 'No PDFs here yet — see the useful links below.'}</div>`;
 
     count.textContent = `${shown.length} of ${course.notes.length} notes`;
   }
@@ -532,11 +588,15 @@ function initLinks(course){
   const list = $('#link-list');
   list.innerHTML = links.map(l => linkCardHTML(l, course)).join('')
     || `<li class="empty">No links yet for this course.</li>`;
+  wireYouTube(list);
+}
 
-  // Click-to-play: swap the thumbnail button for the real YouTube player.
-  // Only the video someone actually clicks loads YouTube's player code —
-  // the page itself never talks to YouTube beyond the thumbnail images.
-  list.addEventListener('click', e => {
+/**
+ * Click-to-play for YouTube cards inside `root`: swap the thumbnail button for
+ * the real player. Only the video someone clicks loads YouTube's player code.
+ */
+function wireYouTube(root){
+  root.addEventListener('click', e => {
     const btn = e.target.closest('.yt-thumb');
     if(!btn) return;
     const frame = document.createElement('iframe');
@@ -579,12 +639,43 @@ function initViewer(courses){
   frame.title = `PDF: ${note.title}`;
 }
 
+/** resources.html — general links grouped by topic, with subject chips. */
+async function initResources(){
+  const res = await fetch('data/resources.json');
+  if(!res.ok) throw new Error('Could not load data/resources.json');
+  const { groups } = await res.json();
+  const box = $('#resource-groups');
+  const allLinks = groups.flatMap(g => g.links);
+
+  // Subject chips from whatever `subject` values the data uses (CS, MATH, MISC…).
+  const subjects = [...new Set(allLinks.map(l => l.subject || 'MISC'))].sort();
+  const getSubject = initChipFilter($('#subject-filters'),
+    subjects.map(sub => ({ value: sub, label: sub, color: sub === 'MATH' ? '#7FA8D4' : sub === 'CS' ? 'var(--accent2)' : 'var(--muted)' })),
+    render);
+
+  function render(){
+    const subject = getSubject();
+    const shownGroups = groups
+      .map(g => ({ ...g, links: g.links.filter(l => !subject || (l.subject || 'MISC') === subject) }))
+      .filter(g => g.links.length);              // hide groups with nothing left
+    box.innerHTML = shownGroups.map(g => `
+      <section class="resource-group">
+        <h3 class="group-head" style="--course-accent:${esc(g.color)}">${esc(g.label)} <span>${g.links.length}</span></h3>
+        <ul class="link-grid">${g.links.map(l => linkCardHTML(l, { color: g.color })).join('')}</ul>
+      </section>`).join('') || `<div class="empty">No resources tagged ${esc(subject)}.</div>`;
+    const shown = shownGroups.reduce((s, g) => s + g.links.length, 0);
+    $('#search-count').textContent = subject ? `${shown} of ${allLinks.length} links` : '';
+  }
+  render();
+  wireYouTube(box);
+}
+
 /* ---- 6. Boot ----------------------------------------------------------------
    LATER (analytics): a page-view ping would go here, once per load.
    LATER (CLI / tooling): nothing runs in the browser for that — it would be a
    separate script that edits data/courses.json and drops files into pdfs/.
 ---------------------------------------------------------------------------- */
-const PAGES = { home: initHome, courses: initCourses, course: initCourse, viewer: initViewer };
+const PAGES = { home: initHome, courses: initCourses, course: initCourse, viewer: initViewer, resources: initResources };
 
 document.addEventListener('DOMContentLoaded', async () => {
   initTheme();

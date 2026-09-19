@@ -24,12 +24,13 @@ PDFS = os.path.join(ROOT, "pdfs")
 BRAND = "Notes++"
 
 # What the note type contributes to the filename. Types not listed use the note title.
-TYPE_LABEL = {"syllabus": "Course Description"}
+TYPE_LABEL = {"syllabus": "Course Description"}   # other types use the note title as-is
 
 
 def safe(s):
-    """Strip characters that Windows and URLs reject in filenames."""
-    return "".join(ch for ch in s if ch not in '\\/:*?"<>|').strip()
+    """Make a title filename-safe: '/' becomes '-' (2017/18 -> 2017-18); other reserved characters are dropped."""
+    s = s.replace("/", "-")
+    return "".join(ch for ch in s if ch not in '\\:*?"<>|').strip()
 
 
 def target_name(course, note):
@@ -63,8 +64,10 @@ def main():
             if new_name == note["filename"] and already_stamped(src):
                 continue                                  # nothing to do
 
+            reader = PdfReader(src)
+            if reader.is_encrypted: reader.decrypt("")      # some scans are AES-locked with an empty password
             writer = PdfWriter()
-            writer.append(PdfReader(src))
+            writer.append(reader)
             writer.add_metadata({
                 "/Title": f"{course['code']} {course['name']} — {TYPE_LABEL.get(note['type'], note['title'])}",
                 "/Author": BRAND,

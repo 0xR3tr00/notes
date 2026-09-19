@@ -1,5 +1,5 @@
 {
-  "_comment": "Content for the whole site. To add a note: name the PDF '<CODE> - <Course> - <Title> - Notes++.pdf', drop it in pdfs/ and add an entry to that course's notes[]. note.type must be one of: syllabus | lecture | lab | problem-set | other — the course page shows one section per type. Dates are ISO (YYYY-MM-DD) so they sort as plain strings. level = year (1-4), used for grouping and colour. LATER: a backend/admin panel would generate this from a database instead of a hand-edited file.",
+  "_comment": "Content for the whole site. To add a note: name the PDF '<CODE> - <Course> - <Title> - Notes++.pdf', drop it in pdfs/ and add an entry to that course's notes[]. note.type must be one of: syllabus | lecture | lab | problem-set | review | exam | reference | other — the course page shows one section per type. Dates are ISO (YYYY-MM-DD) so they sort as plain strings. level = year (1-4), used for grouping and colour. LATER: a backend/admin panel would generate this from a database instead of a hand-edited file.",
   "courses": [
     {
       "id": "cs101",
@@ -115,6 +115,1421 @@
         }
       ],
       "links": []
+    },
+    {
+      "id": "math101",
+      "code": "MATH 101",
+      "name": "Calculus I",
+      "description": "Limits, derivatives and their applications, and an introduction to integration.",
+      "category": "Science",
+      "level": 1,
+      "color": "#7FA8D4",
+      "icon": "∫",
+      "notes": [
+        {
+          "title": "Online exams collection",
+          "type": "exam",
+          "description": "A bundle of online exam papers.",
+          "tags": [
+            "collection"
+          ],
+          "filename": "MATH101 - Calculus I - Online exams collection - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Derivative Rules Table",
+          "type": "reference",
+          "description": "Formulas and values to memorize.",
+          "tags": [
+            "cheat-sheet"
+          ],
+          "filename": "MATH101 - Calculus I - Derivative Rules Table - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Exercises 101",
+          "type": "problem-set",
+          "description": "Practice problems.",
+          "tags": [
+            "practice"
+          ],
+          "filename": "MATH101 - Calculus I - Exercises 101 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Homework — Dr. Abdullah Alshammari",
+          "type": "problem-set",
+          "description": "Practice problems.",
+          "tags": [
+            "practice"
+          ],
+          "filename": "MATH101 - Calculus I - Homework — Dr. Abdullah Alshammari - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Important Values and Rules",
+          "type": "reference",
+          "description": "Formulas and values to memorize.",
+          "tags": [
+            "cheat-sheet"
+          ],
+          "filename": "MATH101 - Calculus I - Important Values and Rules - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Full course notes — Dr. Anton Betten",
+          "type": "lecture",
+          "description": "Complete typed lecture notes for the whole course.",
+          "tags": [
+            "anton"
+          ],
+          "filename": "MATH101 - Calculus I - Full course notes — Dr. Anton Betten - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 1.2 a",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 1.2 a - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 1.2 b + 1.4",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 1.2 b + 1.4 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 1.5 a",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 1.5 a - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 1.5 b",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 1.5 b - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 2.2 + 2.3 b",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 2.2 + 2.3 b - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 2.3 a",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 2.3 a - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 2.4 + 2.5",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 2.4 + 2.5 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 2.6 + 2.7 + 2.8",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 2.6 + 2.7 + 2.8 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 3.1 + 3.2",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 3.1 + 3.2 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 3.10 + 3.11 + 4.1",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 3.10 + 3.11 + 4.1 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 3.3 + 3.4",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 3.3 + 3.4 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 3.5 + 3.6",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 3.5 + 3.6 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 3.9",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 3.9 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 4.2",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 4.2 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 4.3 + 4.5 a",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 4.3 + 4.5 a - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 4.3 + 4.5 b",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 4.3 + 4.5 b - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 4.7 + 4.9 a + 5.2 a",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 4.7 + 4.9 a + 5.2 a - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 4.9 b + 5.2 +5.4 b",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 4.9 b + 5.2 +5.4 b - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 5.2 c + 5.5",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 5.2 c + 5.5 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 5.3 + 6.1",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alotaibi.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Section 5.3 + 6.1 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam (A)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam"
+          ],
+          "filename": "MATH101 - Calculus I - First exam (A) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2017"
+          ],
+          "filename": "MATH101 - Calculus I - First exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2018"
+          ],
+          "filename": "MATH101 - Calculus I - First exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2017"
+          ],
+          "filename": "MATH101 - Calculus I - First exam — Spring 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam (solutions) (A)",
+          "type": "exam",
+          "description": "Past exam paper with suggested solutions.",
+          "tags": [
+            "first-exam",
+            "solutions"
+          ],
+          "filename": "MATH101 - Calculus I - First exam (solutions) (A) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam (solutions) (B)",
+          "type": "exam",
+          "description": "Past exam paper with suggested solutions.",
+          "tags": [
+            "first-exam",
+            "solutions"
+          ],
+          "filename": "MATH101 - Calculus I - First exam (solutions) (B) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam (B)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam"
+          ],
+          "filename": "MATH101 - Calculus I - First exam (B) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "fall-2017"
+          ],
+          "filename": "MATH101 - Calculus I - Second exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "fall-2018"
+          ],
+          "filename": "MATH101 - Calculus I - Second exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "spring-2017"
+          ],
+          "filename": "MATH101 - Calculus I - Second exam — Spring 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam (solutions)",
+          "type": "exam",
+          "description": "Past exam paper with suggested solutions.",
+          "tags": [
+            "second-exam",
+            "solutions"
+          ],
+          "filename": "MATH101 - Calculus I - Second exam (solutions) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First Exam Review",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH101 - Calculus I - First Exam Review - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Past Quizzes Solutions - Second Exam",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH101 - Calculus I - Past Quizzes Solutions - Second Exam - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        }
+      ],
+      "links": [
+        {
+          "title": "Calculus & Linear Algebra PDF library (Google Drive)",
+          "url": "https://drive.google.com/drive/folders/1-091fxwFM3J9cOFB1svHv1UxNEcsSKPB",
+          "description": "A shared Drive folder with many PDFs — lecture notes, worked problems and references for the maths courses."
+        },
+        {
+          "title": "Math Department — past exams",
+          "url": "https://math.sci.kuniv.edu.kw/resources-and-educational-support/past-exams",
+          "description": "Official past exam papers from the Department of Mathematics. Best revision material there is."
+        }
+      ]
+    },
+    {
+      "id": "math102",
+      "code": "MATH 102",
+      "name": "Calculus II",
+      "description": "Techniques of integration, sequences and series, and an introduction to multivariable calculus.",
+      "category": "Science",
+      "level": 1,
+      "color": "#7FA8D4",
+      "icon": "∬",
+      "notes": [
+        {
+          "title": "Important Rules",
+          "type": "reference",
+          "description": "Formulas and values to memorize.",
+          "tags": [
+            "cheat-sheet"
+          ],
+          "filename": "MATH102 - Calculus II - Important Rules - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Important Values",
+          "type": "reference",
+          "description": "Formulas and values to memorize.",
+          "tags": [
+            "cheat-sheet"
+          ],
+          "filename": "MATH102 - Calculus II - Important Values - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Textbook Questions - Quantitative - First",
+          "type": "problem-set",
+          "description": "Practice problems.",
+          "tags": [
+            "practice"
+          ],
+          "filename": "MATH102 - Calculus II - Textbook Questions - Quantitative - First - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Textbook Questions - Quantitative - Second",
+          "type": "problem-set",
+          "description": "Practice problems.",
+          "tags": [
+            "practice"
+          ],
+          "filename": "MATH102 - Calculus II - Textbook Questions - Quantitative - Second - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 01 — Review of prerequisites",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 01 — Review of prerequisites - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 02 — 4.4 Indeterminate forms and l'Hospital's rule",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "l-hospital"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 02 — 4.4 Indeterminate forms and l'Hospital's rule - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 03 — 7.1 Integration by parts",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "integration"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 03 — 7.1 Integration by parts - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 04 — 7.2 Trigonometric integrals",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "integration"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 04 — 7.2 Trigonometric integrals - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 05 — 7.3 Trigonometric substitution",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "integration"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 05 — 7.3 Trigonometric substitution - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 06a — 7.4 Partial fractions (part a)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "integration"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 06a — 7.4 Partial fractions (part a) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 06b — 7.4 Partial fractions (part b)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "integration"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 06b — 7.4 Partial fractions (part b) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 07 — 7.4 Partial fractions (part c), 7.5 Strategy for integration, 7.8 Improper integrals",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "integration"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 07 — 7.4 Partial fractions (part c), 7.5 Strategy for integration, 7.8 Improper integrals - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 08a — 11.1 Sequences (part a)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "sequences"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 08a — 11.1 Sequences (part a) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 08b — 11.1 Sequences (part b)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "sequences"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 08b — 11.1 Sequences (part b) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 08c — 11.1 Sequences (part c)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "sequences"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 08c — 11.1 Sequences (part c) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 10 — 11.3 Integral test, 11.4 Comparison tests (part a)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "series"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 10 — 11.3 Integral test, 11.4 Comparison tests (part a) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 11 — 11.4 Comparison tests (part b), 11.5 Alternating series",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "series"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 11 — 11.4 Comparison tests (part b), 11.5 Alternating series - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 09 — 11.2 Series",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "series"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 09 — 11.2 Series - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 12 — 11.6 Absolute convergence, ratio & root tests, 11.8 Power series",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "series"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 12 — 11.6 Absolute convergence, ratio & root tests, 11.8 Power series - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 13 — 11.9 Representations of functions as power series",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "series"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 13 — 11.9 Representations of functions as power series - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 14 — 11.10 Taylor and Maclaurin series",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "series"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 14 — 11.10 Taylor and Maclaurin series - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 08d — 11.1 Sequences (part d)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi",
+            "sequences"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 08d — 11.1 Sequences (part d) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 17 — 10.1–10.2 Parametric curves",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 17 — 10.1–10.2 Parametric curves - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 18 — 10.3–10.4 Polar coordinates",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 18 — 10.3–10.4 Polar coordinates - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 19 — 10.4 Polar coordinates (part b)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 19 — 10.4 Polar coordinates (part b) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 16 — 8.1–8.3, 6.2 (final exam material)",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 16 — 8.1–8.3, 6.2 (final exam material) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Lecture 15 — 8.1–8.3 Arc length, surface area, applications",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Eng. Mohammad Alotaibi (Spring 2021/22).",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH102 - Calculus II - Lecture 15 — 8.1–8.3 Arc length, surface area, applications - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Exercises (Dr. Fares)",
+          "type": "problem-set",
+          "description": "Practice exercises from Dr. Fares.",
+          "tags": [
+            "fares"
+          ],
+          "filename": "MATH102 - Calculus II - Exercises (Dr. Fares) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final Exam Notes (Dr. Fares)",
+          "type": "review",
+          "description": "Exam-focused notes from Dr. Fares.",
+          "tags": [
+            "fares"
+          ],
+          "filename": "MATH102 - Calculus II - Final Exam Notes (Dr. Fares) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First Exam Notes (Dr. Fares)",
+          "type": "review",
+          "description": "Exam-focused notes from Dr. Fares.",
+          "tags": [
+            "fares"
+          ],
+          "filename": "MATH102 - Calculus II - First Exam Notes (Dr. Fares) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second Exam Notes (Dr. Fares)",
+          "type": "review",
+          "description": "Exam-focused notes from Dr. Fares.",
+          "tags": [
+            "fares"
+          ],
+          "filename": "MATH102 - Calculus II - Second Exam Notes (Dr. Fares) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Diagrams — Dalal Yousef Aldhulaie",
+          "type": "reference",
+          "description": "Shared by a student (Dalal Yousef Aldhulaie).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Diagrams — Dalal Yousef Aldhulaie - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Full Notes — Ghazi Alrashidi",
+          "type": "lecture",
+          "description": "Shared by a student (Ghazi Alrashidi).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Full Notes — Ghazi Alrashidi - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Full Notes — Rahma",
+          "type": "lecture",
+          "description": "Shared by a student (Rahma).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Full Notes — Rahma - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Full Notes — Samira",
+          "type": "lecture",
+          "description": "Shared by a student (Samira).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Full Notes — Samira - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Notes — Rahma",
+          "type": "lecture",
+          "description": "Shared by a student (Rahma).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Notes — Rahma - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Rules — Dalal Yousef Aldhulaie",
+          "type": "reference",
+          "description": "Shared by a student (Dalal Yousef Aldhulaie).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Rules — Dalal Yousef Aldhulaie - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second Exam Notes — Dalal Yousef Aldhulaie",
+          "type": "review",
+          "description": "Shared by a student (Dalal Yousef Aldhulaie).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Second Exam Notes — Dalal Yousef Aldhulaie - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Values to Memorize — Dalal Yousef Aldhulaie",
+          "type": "reference",
+          "description": "Shared by a student (Dalal Yousef Aldhulaie).",
+          "tags": [
+            "student-notes"
+          ],
+          "filename": "MATH102 - Calculus II - Values to Memorize — Dalal Yousef Aldhulaie - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2021",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "spring-2021"
+          ],
+          "filename": "MATH102 - Calculus II - Second exam — Spring 2021 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Nov 2023",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2023"
+          ],
+          "filename": "MATH102 - Calculus II - First exam — Nov 2023 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2022/23 (solutions)",
+          "type": "exam",
+          "description": "Past exam paper with suggested solutions.",
+          "tags": [
+            "first-exam",
+            "solutions",
+            "fall-2022"
+          ],
+          "filename": "MATH102 - Calculus II - First exam — Fall 2022-23 (solutions) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Fall 2021 (objective)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "objective",
+            "fall-2021"
+          ],
+          "filename": "MATH102 - Calculus II - Final exam — Fall 2021 (objective) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Spring 2020 (objective)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "objective",
+            "spring-2020"
+          ],
+          "filename": "MATH102 - Calculus II - Final exam — Spring 2020 (objective) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Summer 2019/20 (objective)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "objective",
+            "summer-2019"
+          ],
+          "filename": "MATH102 - Calculus II - Final exam — Summer 2019-20 (objective) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Incomplete first exam (objective)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "objective"
+          ],
+          "filename": "MATH102 - Calculus II - Incomplete first exam (objective) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Incomplete second exam (objective)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "objective"
+          ],
+          "filename": "MATH102 - Calculus II - Incomplete second exam (objective) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Fall 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "fall-2021"
+          ],
+          "filename": "MATH102 - Calculus II - Second exam — Fall 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "spring-2021"
+          ],
+          "filename": "MATH102 - Calculus II - Second exam — Spring 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Summer 2023",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "summer-2023"
+          ],
+          "filename": "MATH102 - Calculus II - First exam — Summer 2023 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2019/20 (objective)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "objective",
+            "spring-2019"
+          ],
+          "filename": "MATH102 - Calculus II - Second exam — Spring 2019-20 (objective) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2020 (objective)",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "objective",
+            "spring-2020"
+          ],
+          "filename": "MATH102 - Calculus II - Second exam — Spring 2020 (objective) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Spring 2021/22 (solutions)",
+          "type": "exam",
+          "description": "Past exam paper with suggested solutions.",
+          "tags": [
+            "final",
+            "solutions",
+            "spring-2021"
+          ],
+          "filename": "MATH102 - Calculus II - Final exam — Spring 2021-22 (solutions) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2021"
+          ],
+          "filename": "MATH102 - Calculus II - First exam — Spring 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2021/22 (solutions)",
+          "type": "exam",
+          "description": "Past exam paper with suggested solutions.",
+          "tags": [
+            "second-exam",
+            "solutions",
+            "spring-2021"
+          ],
+          "filename": "MATH102 - Calculus II - Second exam — Spring 2021-22 (solutions) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2022/23",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2022"
+          ],
+          "filename": "MATH102 - Calculus II - First exam — Spring 2022-23 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Fall 2021/22 (solutions)",
+          "type": "exam",
+          "description": "Past exam paper with suggested solutions.",
+          "tags": [
+            "final",
+            "solutions",
+            "fall-2021"
+          ],
+          "filename": "MATH102 - Calculus II - Final exam — Fall 2021-22 (solutions) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final Exam Review",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Final Exam Review - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final Exam Summary",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Final Exam Summary - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First Exam Review",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "alotaibi"
+          ],
+          "filename": "MATH102 - Calculus II - First Exam Review - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Harmonic Series",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Harmonic Series - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Review for Tests",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Review for Tests - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second Exam Review (extended)",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Second Exam Review (extended) - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second Exam Review",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Second Exam Review - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Summary - Second Exam",
+          "type": "review",
+          "description": "Revision material for the exam.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH102 - Calculus II - Summary - Second Exam - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        }
+      ],
+      "links": [
+        {
+          "title": "Calculus & Linear Algebra PDF library (Google Drive)",
+          "url": "https://drive.google.com/drive/folders/1-091fxwFM3J9cOFB1svHv1UxNEcsSKPB",
+          "description": "A shared Drive folder with many PDFs — lecture notes, worked problems and references for the maths courses."
+        },
+        {
+          "title": "Math Department — past exams",
+          "url": "https://math.sci.kuniv.edu.kw/resources-and-educational-support/past-exams",
+          "description": "Official past exam papers from the Department of Mathematics. Best revision material there is."
+        }
+      ]
+    },
+    {
+      "id": "math111",
+      "code": "MATH 111",
+      "name": "Linear Algebra",
+      "description": "Systems of linear equations, matrices, determinants, vector spaces, eigenvalues and eigenvectors.",
+      "category": "Science",
+      "level": 1,
+      "color": "#7FA8D4",
+      "icon": "[ ]",
+      "notes": [
+        {
+          "title": "Full Summary - Quantitative",
+          "type": "review",
+          "description": "Condensed summary for revision.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH111 - Linear Algebra - Full Summary - Quantitative - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Summary",
+          "type": "review",
+          "description": "Condensed summary for revision.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH111 - Linear Algebra - Summary - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Section 1.3",
+          "type": "lecture",
+          "description": "Handwritten lecture notes — Alsafeer.",
+          "tags": [
+            "alsafeer"
+          ],
+          "filename": "MATH111 - Linear Algebra - Section 1.3 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Full course notes — Dr. Anton Betten",
+          "type": "lecture",
+          "description": "Complete typed lecture notes for the whole course.",
+          "tags": [
+            "anton"
+          ],
+          "filename": "MATH111 - Linear Algebra - Full course notes — Dr. Anton Betten - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "fall-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - Final exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "fall-2018"
+          ],
+          "filename": "MATH111 - Linear Algebra - Final exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Spring 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "spring-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - Final exam — Spring 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Spring 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "spring-2018"
+          ],
+          "filename": "MATH111 - Linear Algebra - Final exam — Spring 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Summer 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "summer-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - Final exam — Summer 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Summer 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "summer-2021"
+          ],
+          "filename": "MATH111 - Linear Algebra - Final exam — Summer 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - First exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2018"
+          ],
+          "filename": "MATH111 - Linear Algebra - First exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2019/20",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2019"
+          ],
+          "filename": "MATH111 - Linear Algebra - First exam — Fall 2019-20 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - First exam — Spring 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2018"
+          ],
+          "filename": "MATH111 - Linear Algebra - First exam — Spring 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Summer 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "summer-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - First exam — Summer 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Summer 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "summer-2021"
+          ],
+          "filename": "MATH111 - Linear Algebra - First exam — Summer 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "fall-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - Second exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "fall-2018"
+          ],
+          "filename": "MATH111 - Linear Algebra - Second exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "spring-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - Second exam — Spring 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "spring-2018"
+          ],
+          "filename": "MATH111 - Linear Algebra - Second exam — Spring 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Summer 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "summer-2017"
+          ],
+          "filename": "MATH111 - Linear Algebra - Second exam — Summer 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Summer 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "summer-2021"
+          ],
+          "filename": "MATH111 - Linear Algebra - Second exam — Summer 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        }
+      ],
+      "links": [
+        {
+          "title": "Calculus & Linear Algebra PDF library (Google Drive)",
+          "url": "https://drive.google.com/drive/folders/1-091fxwFM3J9cOFB1svHv1UxNEcsSKPB",
+          "description": "A shared Drive folder with many PDFs — lecture notes, worked problems and references for the maths courses."
+        },
+        {
+          "title": "Math Department — past exams",
+          "url": "https://math.sci.kuniv.edu.kw/resources-and-educational-support/past-exams",
+          "description": "Official past exam papers from the Department of Mathematics. Best revision material there is."
+        }
+      ]
     },
     {
       "id": "cs201",
@@ -248,6 +1663,216 @@
           ],
           "filename": "CS223 - Systems Programming - Course Description - Notes++.pdf",
           "dateAdded": "2026-09-18"
+        }
+      ],
+      "links": []
+    },
+    {
+      "id": "math211",
+      "code": "MATH 211",
+      "name": "Calculus III",
+      "description": "Vectors, partial derivatives, multiple integrals and vector calculus. (2018 plan only — dropped in 2024.)",
+      "category": "Science",
+      "level": 2,
+      "color": "#7FA8D4",
+      "icon": "∭",
+      "notes": [
+        {
+          "title": "First Exam Review",
+          "type": "review",
+          "description": "Condensed summary for revision.",
+          "tags": [
+            "review"
+          ],
+          "filename": "MATH211 - Calculus III - First Exam Review - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "fall-2017"
+          ],
+          "filename": "MATH211 - Calculus III - Final exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "fall-2018"
+          ],
+          "filename": "MATH211 - Calculus III - Final exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Spring 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "spring-2017"
+          ],
+          "filename": "MATH211 - Calculus III - Final exam — Spring 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Spring 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "spring-2021"
+          ],
+          "filename": "MATH211 - Calculus III - Final exam — Spring 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Final exam — Summer 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "final",
+            "summer-2017"
+          ],
+          "filename": "MATH211 - Calculus III - Final exam — Summer 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2017"
+          ],
+          "filename": "MATH211 - Calculus III - First exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2018"
+          ],
+          "filename": "MATH211 - Calculus III - First exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Fall 2019/20",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "fall-2019"
+          ],
+          "filename": "MATH211 - Calculus III - First exam — Fall 2019-20 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2017"
+          ],
+          "filename": "MATH211 - Calculus III - First exam — Spring 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2018"
+          ],
+          "filename": "MATH211 - Calculus III - First exam — Spring 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Spring 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "spring-2021"
+          ],
+          "filename": "MATH211 - Calculus III - First exam — Spring 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "First exam — Summer 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "first-exam",
+            "summer-2017"
+          ],
+          "filename": "MATH211 - Calculus III - First exam — Summer 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Fall 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "fall-2017"
+          ],
+          "filename": "MATH211 - Calculus III - Second exam — Fall 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Fall 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "fall-2018"
+          ],
+          "filename": "MATH211 - Calculus III - Second exam — Fall 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2018/19",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "spring-2018"
+          ],
+          "filename": "MATH211 - Calculus III - Second exam — Spring 2018-19 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Spring 2021/22",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "spring-2021"
+          ],
+          "filename": "MATH211 - Calculus III - Second exam — Spring 2021-22 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
+        },
+        {
+          "title": "Second exam — Summer 2017/18",
+          "type": "exam",
+          "description": "Past exam paper.",
+          "tags": [
+            "second-exam",
+            "summer-2017"
+          ],
+          "filename": "MATH211 - Calculus III - Second exam — Summer 2017-18 - Notes++.pdf",
+          "dateAdded": "2026-09-19"
         }
       ],
       "links": []

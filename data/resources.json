@@ -1,0 +1,41 @@
+{
+  "_comment": "General links not tied to one course. Each group has a label, an accent colour and links (title, subject, url, description). subject is a short tag used for the filter chips — CS, MATH, MISC, or anything else; chips are generated from whatever values appear. YouTube URLs get a thumbnail automatically. Course-specific links belong in courses.json instead.",
+  "groups": [
+    {
+      "label": "University & department",
+      "color": "#F2A93B",
+      "links": [
+        {
+          "title": "CS Department — Kuwait University",
+          "subject": "CS",
+          "url": "https://www.cs.ku.edu.kw/",
+          "description": "Official department site: announcements, major sheets, faculty pages and course descriptions."
+        },
+        {
+          "title": "Math Department — past exams",
+          "subject": "MATH",
+          "url": "https://math.sci.kuniv.edu.kw/resources-and-educational-support/past-exams",
+          "description": "Past exam papers for the maths courses in the programme."
+        }
+      ]
+    },
+    {
+      "label": "Study & reference",
+      "color": "#5FD3C4",
+      "links": [
+        {
+          "title": "W3Schools",
+          "subject": "CS",
+          "url": "https://www.w3schools.com/",
+          "description": "Quick, example-driven tutorials for HTML, CSS, JavaScript, SQL, Python and more. Good for looking things up fast."
+        },
+        {
+          "title": "GeeksforGeeks",
+          "subject": "CS",
+          "url": "https://www.geeksforgeeks.org/",
+          "description": "Data structures, algorithms, OS, DBMS and networking articles with worked examples — covers most of the CS core."
+        }
+      ]
+    }
+  ]
+}
