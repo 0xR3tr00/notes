@@ -91,11 +91,58 @@ function esc(str){
     .replace(/'/g, '&#39;');
 }
 
-/** "2026-09-15" -> "15 Sep 2026". Dates stay ISO in JSON so they sort correctly. */
+/* ---- Arabic -----------------------------------------------------------------
+   The site is English-first, but any string in the data may be Arabic. Rather
+   than tagging content by hand, we detect Arabic script and let the browser do
+   the rest:
+     dir="auto"  -> the browser picks direction from the first strong character
+     lang="ar"   -> CSS applies the Arabic face and line height (:lang(ar))
+   That means a single Arabic note title inside an English list renders
+   correctly without any per-page logic.
+---------------------------------------------------------------------------- */
+
+/** Arabic, Arabic Supplement, Extended-A and the presentation-forms blocks. */
+const AR_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+const hasArabic = str => AR_RE.test(String(str ?? ''));
+
+/**
+ * Attributes to drop into a tag that renders text from the data.
+ * Always dir="auto"; lang="ar" as well when the text is Arabic.
+ * Note the leading space — it is written as `<h3${langAttrs(t)}>`.
+ */
+const langAttrs = str => hasArabic(str) ? ' lang="ar" dir="auto"' : ' dir="auto"';
+
+/**
+ * Fold a string for searching. Latin: lowercase. Arabic: strip the diacritics
+ * and tatweel that writers use inconsistently, and unify the letter forms people
+ * type interchangeably — أ إ آ -> ا, ة -> ه, ى -> ي. Without this, searching
+ * "احصاء" would miss "إحصاء" even though they are the same word to a reader.
+ */
+function fold(str){
+  return String(str ?? '')
+    .toLowerCase()
+    .replace(/[ً-ْـ]/g, '')   // harakat (diacritics) + tatweel
+    .replace(/[آأإ]/g, 'ا')  // آ أ إ -> ا
+    .replace(/ة/g, 'ه')             // ة -> ه
+    .replace(/ى/g, 'ي');            // ى -> ي
+}
+
+/** An optional Arabic companion line (course nameAr, note titleAr…). */
+const arLine = str => str ? `<div class="ar" lang="ar" dir="rtl">${esc(str)}</div>` : '';
+
+/**
+ * "2026-09-15" -> "15 Sep 2026" / "١٥ سبتمبر ٢٠٢٦".
+ * Dates stay ISO in the JSON so they sort correctly; only the display changes.
+ * `ar-KW` gives Gregorian months with Arabic names, which is what a Kuwait
+ * University calendar uses — not the Hijri calendar.
+ */
 function formatDate(iso){
   const d = new Date(iso + 'T00:00:00');
   if(isNaN(d)) return iso;
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  // -u-nu-latn keeps Western digits in Arabic ("18 سبتمبر 2026"), matching the
+  // course codes and credit counts elsewhere on the page.
+  const locale = currentLang() === 'ar' ? 'ar-KW-u-nu-latn' : 'en-GB';
+  return d.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 /** Read a ?key=value from the current page URL. */
@@ -129,8 +176,9 @@ const pdfUrl = note => PDF_DIR + encodeURIComponent(note.filename);
 /** Case-insensitive "does this note match the query" — title, description, tags. */
 function noteMatches(note, q){
   if(!q) return true;
-  const hay = [note.title, note.description, note.type, ...note.tags].join(' ').toLowerCase();
-  return hay.includes(q);
+  const hay = fold([note.title, note.titleAr, note.description, note.descriptionAr,
+                    note.type, ...note.tags].filter(Boolean).join(' '));
+  return hay.includes(fold(q));
 }
 
 /**
@@ -164,10 +212,12 @@ function domainOf(url){
 /** A course matches if its own text matches OR any of its notes/links do. */
 function courseMatches(course, q){
   if(!q) return true;
-  const own = [course.name, course.code, course.description, course.category].join(' ').toLowerCase();
-  return own.includes(q)
+  const own = fold([course.name, course.nameAr, course.code, course.description,
+                    course.descriptionAr, course.category].filter(Boolean).join(' '));
+  const needle = fold(q);
+  return own.includes(needle)
     || course.notes.some(n => noteMatches(n, q))
-    || (course.links || []).some(l => (l.title + ' ' + l.description).toLowerCase().includes(q));
+    || (course.links || []).some(l => fold(`${l.title} ${l.description || ''}`).includes(needle));
 }
 
 /* ---- 4. Templates -----------------------------------------------------------
@@ -179,17 +229,23 @@ function courseMatches(course, q){
 
 function courseCardHTML(course){
   const count = course.notes.length;
-  const updated = count ? `updated ${formatDate(latestDate(course))}` : 'no notes yet';
+  const updated = count ? t('card.updated', { d: formatDate(latestDate(course)) }) : t('card.noNotes');
+  // In Arabic, lead with the Arabic name; the English becomes the second line.
+  const arFirst = currentLang() === 'ar' && course.nameAr;
+  const title   = arFirst ? course.nameAr : course.name;
+  const subtitle = arFirst ? course.name : course.nameAr;
   return `
     <a href="${courseUrl(course)}" class="course-card" style="--course-accent:${esc(course.color)}">
       <div class="card-top">
         <span class="tag">${esc(course.category)} · ${esc(course.code)}</span>
         <span class="course-icon" aria-hidden="true">${esc(course.icon)}</span>
       </div>
-      <h3>${esc(course.name)}</h3>
-      <p>${esc(course.description)}</p>
+      <h3${langAttrs(title)}>${esc(title)}</h3>
+      ${subtitle ? `<div class="alt-name"${langAttrs(subtitle)}>${esc(subtitle)}</div>` : ''}
+      <p${langAttrs(course.description)}>${esc(course.description)}</p>
+      ${arLine(course.descriptionAr)}
       <div class="meta">
-        <span>${count} ${count === 1 ? 'note' : 'notes'}</span><span>·</span><span>${esc(updated)}</span>
+        <span>${t('card.notesCount', { n: count })}</span><span>·</span><span>${esc(updated)}</span>
       </div>
     </a>`;
 }
@@ -203,8 +259,10 @@ function noteItemHTML(note, course, { showCourse = false } = {}){
   return `
     <li class="note-item" style="--course-accent:${esc(course.color)}">
       <div>
-        <h3><a href="${viewerUrl(course, note)}">${esc(note.title)}</a></h3>
-        <p>${esc(note.description)}</p>
+        <h3${langAttrs(note.title)}><a href="${viewerUrl(course, note)}">${esc(note.title)}</a></h3>
+        ${arLine(note.titleAr)}
+        <p${langAttrs(note.description)}>${esc(note.description)}</p>
+        ${arLine(note.descriptionAr)}
         <div class="note-meta">
           ${courseLink}
           <span>${formatDate(note.dateAdded)}</span>
@@ -212,8 +270,8 @@ function noteItemHTML(note, course, { showCourse = false } = {}){
         </div>
       </div>
       <div class="note-actions">
-        <a class="btn btn-ghost btn-sm" href="${viewerUrl(course, note)}">view</a>
-        <a class="btn btn-ghost btn-sm" href="${pdfUrl(note)}" download>download</a>
+        <a class="btn btn-ghost btn-sm" href="${viewerUrl(course, note)}">${t('common.view')}</a>
+        <a class="btn btn-ghost btn-sm" href="${pdfUrl(note)}" download>${t('common.download')}</a>
       </div>
     </li>`;
 }
@@ -228,8 +286,12 @@ function noteItemHTML(note, course, { showCourse = false } = {}){
  */
 function linkCardHTML(link, course){
   const id = youtubeId(link.url);
+  // Arabic title/description when the data has them and Arabic is active.
+  const ar = currentLang() === 'ar';
+  const title = ar && link.titleAr ? link.titleAr : link.title;
+  const desc  = (ar && link.descriptionAr ? link.descriptionAr : link.description) || '';
   const media = id ? `
-      <button type="button" class="yt-thumb" data-yt="${esc(id)}" aria-label="Play video: ${esc(link.title)}">
+      <button type="button" class="yt-thumb" data-yt="${esc(id)}" data-title="${esc(title)}" aria-label="${t('common.view')}: ${esc(title)}">
         <img src="https://img.youtube.com/vi/${esc(id)}/hqdefault.jpg" alt="" loading="lazy">
         <span class="play" aria-hidden="true">▶</span>
       </button>` : '';
@@ -237,20 +299,21 @@ function linkCardHTML(link, course){
     <li class="link-card ${id ? 'is-video' : ''}" style="--course-accent:${esc(course.color)}">
       ${media}
       <div class="link-body">
-        <h3><a href="${esc(link.url)}" target="_blank" rel="noopener">${esc(link.title)} <span aria-hidden="true">↗</span></a></h3>
-        <p>${esc(link.description || '')}</p>
+        <h3${langAttrs(title)}><a href="${esc(link.url)}" target="_blank" rel="noopener">${esc(title)} <span aria-hidden="true">↗</span></a></h3>
+        <p${langAttrs(desc)}>${esc(desc)}</p>
         <div class="link-domain">${id ? 'youtube.com' : esc(domainOf(link.url))}${link.subject ? ` <span class="note-tag">${esc(link.subject)}</span>` : ''}</div>
       </div>
     </li>`;
 }
 
-/* The "Add a course" card is static for now.
+/* The "Add a course" card is static for now. A function, not a constant, so it
+   picks up the current language each time it is rendered.
    LATER (admin panel): link this to the admin "new course" form. */
-const ADD_COURSE_HTML = `
+const addCourseHTML = () => `
     <a href="index.html#contribute" class="course-card add">
       <div>
         <div class="plus" aria-hidden="true">+</div>
-        <div>Add a course</div>
+        <div>${t('courses.addCourse')}</div>
       </div>
     </a>`;
 
@@ -265,17 +328,21 @@ const LEVEL_COLOR = { 1: '#F2A93B', 2: '#5FD3C4', 3: '#C98BF2', 4: '#F2765B' };
  * the rest sort newest-first. A note with an unknown/missing type lands in "other".
  */
 const NOTE_TYPES = [
-  { id: 'syllabus',    label: 'Syllabus',     byTitle: false },
-  { id: 'lecture',     label: 'Lectures',     byTitle: true  },
-  { id: 'lab',         label: 'Labs',         byTitle: true  },
-  { id: 'problem-set', label: 'Problem sets', byTitle: true  },
-  { id: 'review',      label: 'Reviews & summaries', byTitle: true },
-  { id: 'exam',        label: 'Past exams',   byTitle: true,
+  { id: 'syllabus',    byTitle: false },
+  { id: 'lecture',     byTitle: true  },
+  { id: 'lab',         byTitle: true  },
+  { id: 'problem-set', byTitle: true  },
+  { id: 'review',      byTitle: true  },
+  { id: 'exam',        byTitle: true,
     // Sub-folders: a note goes in the first one whose tag it carries, else "Other".
-    subfolders: [{ tag: 'first-exam', label: 'First exam' }, { tag: 'second-exam', label: 'Second exam' }, { tag: 'final', label: 'Final exam' }] },
-  { id: 'reference',   label: 'Cheat-sheets & references', byTitle: true },
-  { id: 'other',       label: 'Other',        byTitle: false },
+    subfolders: ['first-exam', 'second-exam', 'final'] },
+  { id: 'reference',   byTitle: true  },
+  { id: 'other',       byTitle: false },
 ];
+/* Labels come from ui.json, so they follow the chosen language:
+   type.lecture -> "Lectures" / "المحاضرات". */
+const typeLabel = id => t('type.' + id);
+const subLabel  = tag => t('sub.' + tag);
 
 /**
  * A row of toggle chips. `items` = [{ value, label, color }]. Renders into
@@ -302,7 +369,7 @@ function initChipFilter(container, items, onChange){
 /** Level chips (100 / 200 / 300 / 400). Returns a getter for the active level as a number. */
 function initLevelFilter(container, courses, onChange){
   const levels = [...new Set(courses.map(c => c.level))].sort();
-  const get = initChipFilter(container, levels.map(l => ({ value: String(l), label: `${l}00-level`, color: LEVEL_COLOR[l] })), onChange);
+  const get = initChipFilter(container, levels.map(l => ({ value: String(l), label: t('common.level', { n: l }), color: LEVEL_COLOR[l] })), onChange);
   return () => (get() === null ? null : Number(get()));
 }
 
@@ -329,7 +396,7 @@ function courseGridHTML(courses){
   const levels = [...new Set(courses.map(c => c.level))].sort();
   return levels.map(level => {
     const cards = courses.filter(c => c.level === level).map(courseCardHTML).join('');
-    return `<h3 class="level-head" style="--course-accent:${esc(LEVEL_COLOR[level] || '')}">${level}00-level · year ${level}</h3>${cards}`;
+    return `<h3 class="level-head" style="--course-accent:${esc(LEVEL_COLOR[level] || '')}">${esc(t('common.levelYear', { n: level }))}</h3>${cards}`;
   }).join('');
 }
 
@@ -364,29 +431,29 @@ function initHome(courses){
       .sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
 
     $('#results-courses').innerHTML = hitCourses.map(courseCardHTML).join('')
-      || `<div class="empty">No matching courses.</div>`;
+      || `<div class="empty">${t('home.noCourses')}</div>`;
     $('#results-notes').innerHTML = hitNotes.map(n => noteItemHTML(n, n.course, { showCourse: true })).join('')
-      || `<li class="empty">No matching notes.</li>`;
+      || `<li class="empty">${t('home.noNotes')}</li>`;
     $('#results-course-count').textContent = hitCourses.length;
     $('#results-note-count').textContent = hitNotes.length;
     results.hidden = false;
-    count.textContent = `${hitCourses.length} course${hitCourses.length === 1 ? '' : 's'} · ${hitNotes.length} note${hitNotes.length === 1 ? '' : 's'}`;
+    count.textContent = t('home.countSummary', { c: hitCourses.length, n: hitNotes.length });
   }
   search.addEventListener('input', render);
   render();
 
   // Terminal readout — real counts, so the hero is never out of date.
+  // NB: the loop variable is `line`, not `t` — `t` is the translation function.
   const notes = allNotes(courses);
   const links = courses.reduce((s, c) => s + (c.links || []).length, 0);
   const latest = notes.map(n => n.dateAdded).sort().at(-1);
   $('#terminal-stats').innerHTML = [
-    `${courses.length} courses`,
-    `${notes.length} notes`,
-    `${links} useful links`,
-    latest ? `last update ${formatDate(latest)}` : '',
-  ].filter(Boolean).map(t => `<div class="out">${esc(t)}</div>`).join('');
-  $('#start-courses-count').textContent =
-    `All ${courses.length} courses, grouped 100- to 400-level, each with its syllabus, notes and links.`;
+    t('home.statCourses', { n: courses.length }),
+    t('home.statNotes',   { n: notes.length }),
+    t('home.statLinks',   { n: links }),
+    latest ? t('home.statUpdated', { d: formatDate(latest) }) : '',
+  ].filter(Boolean).map(line => `<div class="out">${esc(line)}</div>`).join('');
+  $('#start-courses-count').textContent = t('home.startBrowseSub', { n: courses.length });
 
   renderPlanBlock(courses);
 }
@@ -406,12 +473,12 @@ async function renderPlanBlock(courses){
     box.innerHTML = `
       <div class="plan-prompt">
         <div>
-          <h2>Which plan are you on?</h2>
-          <p>Pick your admission year once and this page will track your progress.</p>
+          <h2>${t('home.pickPlan')}</h2>
+          <p>${t('home.pickPlanSub')}</p>
         </div>
         <div class="plan-prompt-actions">
-          <a class="btn btn-primary btn-sm" href="curriculum.html?catalog=2024">Admitted 2024/25 or later</a>
-          <a class="btn btn-ghost btn-sm" href="curriculum.html?catalog=2018">Admitted 2018 – 2023</a>
+          <a class="btn btn-primary btn-sm" href="curriculum.html?catalog=2024">${t('home.pick2024')}</a>
+          <a class="btn btn-ghost btn-sm" href="curriculum.html?catalog=2018">${t('home.pick2018')}</a>
         </div>
       </div>`;
     return;
@@ -428,29 +495,29 @@ async function renderPlanBlock(courses){
   box.innerHTML = `
     <div class="section-head">
       <div>
-        <h2>Your plan</h2>
-        <p>Admitted ${esc(p.catalog.label)} · ${p.passedCount} course${p.passedCount === 1 ? '' : 's'} ticked as passed</p>
+        <h2>${t('home.planTitle')}</h2>
+        <p>${esc(t('home.planSub', { label: catalogLabel(p.catalog), n: p.passedCount }))}</p>
       </div>
-      <a href="curriculum.html" class="btn btn-ghost btn-sm">open plan →</a>
+      <a href="curriculum.html" class="btn btn-ghost btn-sm">${t('home.planOpen')}</a>
     </div>
     <div class="dash">
       <div class="dash-card">
         <span class="big">${p.credits}</span><span class="of">/ ${p.total}</span>
-        <div class="label">credits from courses on the map</div>
+        <div class="label">${t('home.planCredits')}</div>
       </div>
       ${p.hasGraph ? `
       <div class="dash-card">
         <span class="big">${p.available.length}</span>
-        <div class="label">courses available to you now</div>
-        <a href="curriculum.html?mode=plan" class="btn btn-ghost btn-sm">update what I've passed</a>
+        <div class="label">${t('home.planAvailable')}</div>
+        <a href="curriculum.html?mode=plan" class="btn btn-ghost btn-sm">${t('home.planUpdate')}</a>
       </div>
       <div class="dash-card dash-wide">
-        <div class="label">You can take now <span class="muted">(≡ = has notes here)</span></div>
-        <div class="chips">${chips || '<span class="muted">Nothing yet — tick your passed courses on the map.</span>'}</div>
+        <div class="label">${t('home.planCanTake')} <span class="muted">${t('home.planHasNotes')}</span></div>
+        <div class="chips">${chips || `<span class="muted">${t('home.planEmpty')}</span>`}</div>
       </div>` : `
       <div class="dash-card dash-wide">
-        <div class="label">This plan has no published prerequisite data, so the site can't say what's open to you — but your checklist is saved.</div>
-        <a href="curriculum.html" class="btn btn-ghost btn-sm">open checklist</a>
+        <div class="label">${t('home.planNoGraph')}</div>
+        <a href="curriculum.html" class="btn btn-ghost btn-sm">${t('home.planOpenChecklist')}</a>
       </div>`}
     </div>`;
 }
@@ -469,9 +536,9 @@ function initCourses(courses){
     const filtering = q || level || subject;
     const shown = filterCourses(courses, level, subject).filter(c => courseMatches(c, q));
 
-    grid.innerHTML = (courseGridHTML(shown) || `<div class="empty">No courses match.</div>`)
-      + (filtering ? '' : ADD_COURSE_HTML);
-    count.textContent = filtering ? `${shown.length} of ${courses.length} courses` : '';
+    grid.innerHTML = (courseGridHTML(shown) || `<div class="empty">${t('courses.none')}</div>`)
+      + (filtering ? '' : addCourseHTML());
+    count.textContent = filtering ? t('courses.countOf', { n: shown.length, total: courses.length }) : '';
   }
 
   search.addEventListener('input', render);
@@ -484,7 +551,7 @@ function initCourse(courses){
   if(!course){
     $('#course-main').innerHTML = `
       <div class="section"><div class="empty">
-        Course not found. <a href="index.html">Back to all courses</a>.
+        ${t('course.notFound')} <a href="index.html">${t('course.backAll')}</a>.
       </div></div>`;
     return;
   }
@@ -497,14 +564,24 @@ function initCourse(courses){
   $('#course-main').style.setProperty('--course-accent', course.color);   // folders, links etc. inherit it
   $('#course-icon').textContent = course.icon;
   $('#course-code').textContent = `${course.category} · ${course.code}`;
-  $('#course-name').textContent = course.name;
-  $('#course-desc').textContent = course.description;
+
+  // In Arabic, lead with the Arabic name and keep the English as the second line.
+  const arabicFirst = currentLang() === 'ar' && course.nameAr;
+  $('#course-name').textContent = arabicFirst ? course.nameAr : course.name;
+  $('#course-name').setAttribute('dir', 'auto');
+  $('#course-desc').textContent = course.descriptionAr && arabicFirst
+    ? course.descriptionAr : course.description;
+  $('#course-desc').setAttribute('dir', 'auto');
+  $('#course-name-ar').innerHTML = arabicFirst
+    ? `<div class="ar" dir="ltr" lang="en">${esc(course.name)}</div>`
+    : arLine(course.nameAr) + arLine(course.descriptionAr);
 
   // Tag filter chips: one per unique tag in this course, in alphabetical order.
+  // NB: the loop variable is `tag` — `t` is the translation function.
   const tags = [...new Set(course.notes.flatMap(n => n.tags))].sort();
   const filters = $('#tag-filters');
   filters.innerHTML = tags
-    .map(t => `<button type="button" class="tag-chip" aria-pressed="false" data-tag="${esc(t)}">${esc(t)}</button>`)
+    .map(tag => `<button type="button" class="tag-chip" aria-pressed="false" data-tag="${esc(tag)}" dir="auto">${esc(tag)}</button>`)
     .join('');
 
   const groups = $('#note-groups');
@@ -540,13 +617,13 @@ function initCourse(courses){
       let body;
       if(type.subfolders){
         // Split into sub-folders by tag; anything unmatched goes to "Other".
-        const buckets = type.subfolders.map(sf => ({ ...sf, items: [] }));
+        const buckets = type.subfolders.map(tag => ({ tag, label: subLabel(tag), items: [] }));
         const rest = [];
         for(const n of items){
           const b = buckets.find(sf => n.tags.includes(sf.tag));
           (b ? b.items : rest).push(n);
         }
-        if(rest.length) buckets.push({ label: 'Other', items: rest });
+        if(rest.length) buckets.push({ label: subLabel('other'), items: rest });
         body = buckets.filter(b => b.items.length).map(b => `
           <details class="folder sub" ${filtering ? 'open' : ''}>
             <summary><span class="folder-icon" aria-hidden="true"></span>${esc(b.label)} <span class="count">${b.items.length}</span></summary>
@@ -557,12 +634,12 @@ function initCourse(courses){
       }
       return `
         <details class="folder" ${filtering ? 'open' : ''}>
-          <summary><span class="folder-icon" aria-hidden="true"></span>${type.label} <span class="count">${items.length}</span></summary>
+          <summary><span class="folder-icon" aria-hidden="true"></span>${esc(typeLabel(type.id))} <span class="count">${items.length}</span></summary>
           ${body}
         </details>`;
-    }).join('') || `<div class="empty">${course.notes.length ? 'No notes match.' : 'No PDFs here yet — see the useful links below.'}</div>`;
+    }).join('') || `<div class="empty">${course.notes.length ? t('course.noMatch') : t('course.noPdfs')}</div>`;
 
-    count.textContent = `${shown.length} of ${course.notes.length} notes`;
+    count.textContent = t('course.countOf', { n: shown.length, total: course.notes.length });
   }
 
   // Clicking a chip toggles it; clicking the active chip clears the filter.
@@ -587,7 +664,7 @@ function initLinks(course){
   const links = course.links || [];
   const list = $('#link-list');
   list.innerHTML = links.map(l => linkCardHTML(l, course)).join('')
-    || `<li class="empty">No links yet for this course.</li>`;
+    || `<li class="empty">${t('course.noLinks')}</li>`;
   wireYouTube(list);
 }
 
@@ -602,7 +679,7 @@ function wireYouTube(root){
     const frame = document.createElement('iframe');
     frame.className = 'yt-player';
     frame.src = `https://www.youtube-nocookie.com/embed/${btn.dataset.yt}?autoplay=1`;
-    frame.title = btn.getAttribute('aria-label').replace('Play video: ', '');
+    frame.title = btn.dataset.title || '';     // set by linkCardHTML, language-independent
     frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
     frame.setAttribute('allowfullscreen', '');
     btn.replaceWith(frame);
@@ -617,7 +694,7 @@ function initViewer(courses){
   if(!note){
     $('#viewer-main').innerHTML = `
       <div class="section"><div class="empty">
-        Note not found. <a href="index.html">Back to all courses</a>.
+        ${t('viewer.noteNotFound')} <a href="index.html">${t('course.backAll')}</a>.
       </div></div>`;
     return;
   }
@@ -660,11 +737,11 @@ async function initResources(){
       .filter(g => g.links.length);              // hide groups with nothing left
     box.innerHTML = shownGroups.map(g => `
       <section class="resource-group">
-        <h3 class="group-head" style="--course-accent:${esc(g.color)}">${esc(g.label)} <span>${g.links.length}</span></h3>
+        <h3 class="group-head" style="--course-accent:${esc(g.color)}" dir="auto">${esc(currentLang() === 'ar' && g.labelAr ? g.labelAr : g.label)} <span>${g.links.length}</span></h3>
         <ul class="link-grid">${g.links.map(l => linkCardHTML(l, { color: g.color })).join('')}</ul>
-      </section>`).join('') || `<div class="empty">No resources tagged ${esc(subject)}.</div>`;
+      </section>`).join('') || `<div class="empty">${esc(t('resources.noneTagged', { tag: subject }))}</div>`;
     const shown = shownGroups.reduce((s, g) => s + g.links.length, 0);
-    $('#search-count').textContent = subject ? `${shown} of ${allLinks.length} links` : '';
+    $('#search-count').textContent = subject ? t('resources.countOf', { n: shown, total: allLinks.length }) : '';
   }
   render();
   wireYouTube(box);
@@ -679,12 +756,14 @@ const PAGES = { home: initHome, courses: initCourses, course: initCourse, viewer
 
 document.addEventListener('DOMContentLoaded', async () => {
   initTheme();
+  // Strings first: every init() below renders labels through t().
+  await initI18n();
 
   const init = PAGES[document.body.dataset.page];
   if(!init) return;
 
   try{
-    init(await loadCourses());
+    await init(await loadCourses());
   }catch(err){
     console.error(err);
     const main = $('main');
@@ -696,3 +775,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div></div>`;
   }
 });
+
+/* Switching language reloads the page rather than re-rendering in place.
+   Re-running each init() would double-bind its event listeners and leave the
+   filter state stranded in the previous closure. A reload is correct by
+   construction and costs nothing here: language, theme, chosen catalog and
+   passed courses all live in localStorage, and the <head> script applies
+   lang/dir before the first paint, so there is no flash of the old language. */
+document.addEventListener('langchange', () => location.reload());

@@ -12,7 +12,13 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="css/style.css">
 <script>
-  try{ document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }catch(e){}
+  // Applied before first paint so neither the theme nor the text direction flashes.
+  try{
+    var d = document.documentElement;
+    d.dataset.theme = localStorage.getItem('theme') || 'dark';
+    var l = localStorage.getItem('lang') || 'en';
+    d.lang = l; d.dir = (l === 'ar' ? 'rtl' : 'ltr');
+  }catch(e){}
 </script>
 </head>
 <!--
@@ -20,17 +26,25 @@
   using the browser's built-in PDF viewer. The "open" and "download" buttons
   are the fallback for phones whose browser can't render PDFs in a frame.
 -->
-<body data-page="viewer">
+<body data-page="viewer" data-title-key="viewer.note">
 
-<nav aria-label="Main">
-  <a href="index.html" class="logo">NOTES<span>++</span></a>
+<nav data-i18n-aria-label="nav.main">
+  <a href="index.html" class="logo" data-i18n-aria-label="nav.homeLabel">
+    <img class="logo-mark for-dark" src="img/wordmark.svg" alt="Notes++" width="112" height="39">
+    <img class="logo-mark for-light" src="img/wordmark-dark.svg" alt="" aria-hidden="true" width="112" height="39">
+  </a>
   <ul class="nav-links">
-    <li><a href="courses.html">← All courses</a></li>
-    <li class="nav-secondary"><a href="curriculum.html">Curriculum</a></li>
-    <li class="nav-secondary"><a href="resources.html">Resources</a></li>
+    <li><a href="courses.html" data-i18n="nav.allCourses">← All courses</a></li>
+    <li class="nav-secondary"><a href="curriculum.html" data-i18n="nav.curriculum">Curriculum</a></li>
+    <li class="nav-secondary"><a href="resources.html" data-i18n="nav.resources">Resources</a></li>
     <li>
-      <button type="button" class="theme-toggle" aria-label="Switch to light mode">
-        <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
+      <button type="button" class="lang-toggle" aria-label="Switch language">
+        <span class="label">ع</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" class="theme-toggle" data-i18n-aria-label="theme.toLight">
+        <span class="icon" aria-hidden="true">☀</span><span class="label" data-i18n="theme.light">light</span>
       </button>
     </li>
   </ul>
@@ -40,26 +54,27 @@
 
 <div class="viewer-bar">
   <div>
-    <div class="crumbs"><a id="crumb-course" href="index.html">Course</a> / note</div>
-    <h1 id="note-title">Loading…</h1>
+    <div class="crumbs"><a id="crumb-course" href="index.html">Course</a> / <span data-i18n="viewer.note">note</span></div>
+    <h1 id="note-title" data-i18n="common.loading">Loading…</h1>
   </div>
   <div class="note-actions">
-    <a id="open-link" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener">open in new tab ↗</a>
-    <a id="download-link" class="btn btn-primary btn-sm" href="#" download>download PDF</a>
+    <a id="open-link" class="btn btn-ghost btn-sm" href="#" target="_blank" rel="noopener" data-i18n="viewer.openTab">open in new tab ↗</a>
+    <a id="download-link" class="btn btn-primary btn-sm" href="#" download data-i18n="viewer.downloadPdf">download PDF</a>
   </div>
 </div>
 
 <iframe id="pdf-frame" class="viewer-frame" title="PDF viewer"></iframe>
 
-<p class="viewer-fallback">If the PDF doesn't appear above, your browser can't display PDFs inline — use "open in new tab" or "download".</p>
+<p class="viewer-fallback" data-i18n="viewer.fallback">If the PDF doesn't appear above, your browser can't display PDFs inline — use "open in new tab" or "download".</p>
 
 </main>
 
 <footer>
-  <div>Notes++ — a shared knowledge base, one course at a time</div>
-  <div class="footer-credit">© 2026 <span>retr0</span> · built with plain HTML, CSS &amp; JS · no frameworks, no tracking</div>
+  <div data-i18n="footer.tagline">Notes++ — a shared knowledge base, one course at a time</div>
+  <div class="footer-credit">© 2026 <span>retr0</span> <span data-i18n="footer.built">· built with plain HTML, CSS &amp; JS · no frameworks, no tracking</span></div>
 </footer>
 
+<script src="js/i18n.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

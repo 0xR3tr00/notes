@@ -10,9 +10,21 @@
     "sourceDocument": "https://www.cs.ku.edu.kw/wp-content/uploads/2020/04/CS_MajorSheetEN.pdf",
     "sourceDocumentAr": "https://www.cs.ku.edu.kw/wp-content/uploads/2021/03/CS_MajorSheet_2018_AR.pdf",
     "requirements": {
-      "university": { "total": 27, "compulsory": 15, "elective": 12 },
-      "collegeOfScience": { "total": 24, "compulsory": 12, "elective": 12 },
-      "department": { "total": 72, "core": 57, "elective": 15 },
+      "university": {
+        "total": 27,
+        "compulsory": 15,
+        "elective": 12
+      },
+      "collegeOfScience": {
+        "total": 24,
+        "compulsory": 12,
+        "elective": 12
+      },
+      "department": {
+        "total": 72,
+        "core": 57,
+        "elective": 15
+      },
       "freeElectives": 6
     },
     "electiveRules": [
@@ -21,22 +33,33 @@
       "At least 6 credits of CS electives must be at the 400 level.",
       "Science electives: 12 credits from the College of Science, but NOT in mathematics, statistics, or operations research. Must include two consecutive science courses in the same discipline, each with a laboratory.",
       "University free electives: 6 credits, requiring pre-approval from the CS department, and not in basic mathematics, basic statistics, IT, informatics, or basic computing."
-    ]
+    ],
+    "nameAr": "بكالوريوس علوم الحاسوب",
+    "appliesToAr": "للطلبة المقبولين من خريف 2018/2019 حتى 2023/2024"
   },
-
   "dataStatus": {
     "prerequisitesSourced": false,
     "warning": "The 2018 major sheet lists courses and credits only. The department has NOT published a course dependency graph for this catalog year — unlike the 2024 plan. Every `prerequisites` array below is empty because the data does not exist in the source, NOT because these courses have no prerequisites. They certainly do. Do not render a prerequisite graph, an 'unlocks' view, or a 'what can I take now?' feature for this plan until prerequisite data is obtained from the department or the course catalog.",
     "arabicNames": "Not included — the English major sheet has no Arabic names. They can be transcribed from the Arabic major sheet PDF (linked in program.sourceDocumentAr).",
     "suggestedStudyPlan": "Not published for this catalog year on the department site."
   },
-
   "categories": {
-    "cs-core": { "label": "CS Core", "accent": "#F2A93B" },
-    "cs-elective": { "label": "CS Elective", "accent": "#5FD3C4" },
-    "math-science": { "label": "College of Science", "accent": "#7FA8D4" }
+    "cs-core": {
+      "label": "CS Core",
+      "accent": "#F2A93B",
+      "labelAr": "المتطلبات الالزامية"
+    },
+    "cs-elective": {
+      "label": "CS Elective",
+      "accent": "#5FD3C4",
+      "labelAr": "المقررات الاختيارية"
+    },
+    "math-science": {
+      "label": "College of Science",
+      "accent": "#7FA8D4",
+      "labelAr": "متطلبات كلية العلوم"
+    }
   },
-
   "courses": [
     {
       "id": "0418111",
@@ -206,7 +229,6 @@
       "prerequisites": [],
       "verify": "Almost certainly requires 0418491, but this is not stated in the source document."
     },
-
     {
       "id": "0418315",
       "short": "CS315",
@@ -339,7 +361,6 @@
       "conditions": [],
       "verify": "The 2024 plan marks this as requiring department approval. Confirm whether the same applied under the 2018 plan."
     },
-
     {
       "id": "0410101",
       "short": "MATH101",

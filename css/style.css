@@ -1,3 +1,24 @@
+/* -----------------------------------------------------------------------------
+   Watad (Almohtaraf) — the Arabic face, self-hosted.
+   The font's own OS/2 fsType is 0 ("installable, no embedding restriction"),
+   i.e. the vendor's machine-readable permission to embed it.
+
+   unicode-range limits it to Arabic script blocks, so Latin characters sitting
+   inside an Arabic string (course codes like "CS201", digits, punctuation) keep
+   using Inter and stay visually consistent with the rest of the page. The
+   browser only downloads the file at all if Arabic actually appears.
+   Only a Regular weight exists, so bold Arabic is synthesised — see
+   font-synthesis below.
+----------------------------------------------------------------------------- */
+@font-face{
+  font-family: 'Watad';
+  src: url('../fonts/watad-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200F, U+061F;
+}
+
 /* =============================================================================
    Notes++ — stylesheet
    -----------------------------------------------------------------------------
@@ -26,6 +47,9 @@
   --card-shadow: none;            /* light mode adds a lift; dark relies on borders */
   --mono: 'JetBrains Mono', monospace;
   --sans: 'Inter', sans-serif;
+  /* Arabic face. Swap this one line to change every Arabic string on the site.
+     (Thmanyah is not here: its licence forbids web embedding. Watad allows it.) */
+  --sans-ar: 'Watad', 'Segoe UI', Tahoma, sans-serif;
 }
 
 /* Light theme: same variable names, different values.
@@ -117,6 +141,86 @@ html{scrollbar-color: var(--scroll-thumb) var(--bg-deep);}
   --accent-ink: color-mix(in srgb, var(--course-accent) 55%, #172B40);
 }
 
+/* ---- 2b. Arabic -------------------------------------------------------------
+   Any element marked lang="ar" gets the Arabic face and slightly looser line
+   height (Arabic has taller ascenders/descenders than Latin and looks cramped
+   at Inter's metrics). Elements rendered from data carry dir="auto", which
+   lets the BROWSER pick direction from the first strong character — so an
+   Arabic course title flips to RTL on its own and an English one doesn't,
+   with no JavaScript deciding anything.
+---------------------------------------------------------------------------- */
+:lang(ar), [dir="rtl"]{
+  font-family: var(--sans-ar);
+  line-height: 1.75;
+}
+/* Arabic has no italics and no small-caps; faux-italic looks broken. */
+:lang(ar) em, :lang(ar) i{font-style: normal; font-weight: 600;}
+:lang(ar) .mono, :lang(ar) code{font-family: var(--sans-ar);}
+
+/* Headings in Arabic: the mono face has no Arabic glyphs, so headings that
+   would use --mono fall back to the Arabic face at a heavier weight. */
+h1:lang(ar), h2:lang(ar), h3:lang(ar), .group-head:lang(ar){
+  font-family: var(--sans-ar); letter-spacing: 0;
+  /* Watad ships Regular only. Synthesised bold on Arabic smears the joins, so
+     headings lean on size and colour for emphasis instead of a faux-bold. */
+  font-weight: 500;
+  font-synthesis-weight: none;
+}
+
+/* A line of Arabic sitting inside an otherwise English block (course detail
+   panels, note subtitles). Right-aligned, quieter than the English above it. */
+.ar{
+  font-family: var(--sans-ar); line-height:1.8; font-size:17px;
+  color: var(--muted); text-align: right;
+  max-width: 60ch;          /* so it sits under the English column, not the full page width */
+  margin-top: 4px;
+}
+.course-hero .ar{font-size:20px;}
+/* Watad runs small at a given pixel size, as many Arabic faces do. Arabic text
+   inside a mixed block gets a small optical bump so it reads at the same weight
+   as the Latin beside it. 1em = whatever the parent was, so this scales. */
+:lang(ar){font-size: 1.08em;}
+.ar:lang(ar){font-size: inherit;}   /* .ar already sets its own size; don't double up */
+
+/* When a whole element is RTL, flip the things that assume left-to-right:
+   the accent border, list padding and the folder chevron. Logical properties
+   (border-inline-start, padding-inline) do this automatically — that is why
+   the rest of the stylesheet is gradually moving to them. */
+[dir="rtl"] .course-card, [dir="rtl"] .note-item, [dir="rtl"] .check-row, [dir="rtl"] .slot{
+  border-left-width:1px; border-right:3px solid var(--course-accent, var(--cat, var(--accent)));
+}
+[dir="rtl"] .disclaimer{border-left:0; border-right:3px solid var(--accent); border-radius:4px 0 0 4px;}
+[dir="rtl"] .eyebrow::before{order:2;}
+[dir="rtl"] .folder > summary::after{margin-left:0; margin-right:auto; transform: rotate(135deg);}
+[dir="rtl"] .folder[open] > summary::after{transform: rotate(45deg);}
+[dir="rtl"] .search::before{left:auto; right:14px;}
+[dir="rtl"] .search input{padding: 11px 36px 11px 14px;}
+
+/* ---- 2c. RTL layout ----------------------------------------------------------
+   Only the rules that genuinely need flipping. Anything built with flexbox or
+   grid reverses on its own once dir="rtl" is set on <html>; these are the
+   leftovers that hard-code a side.
+---------------------------------------------------------------------------- */
+[dir="rtl"] .skip-link{left:auto; right:16px;}
+[dir="rtl"] .eyebrow::before{margin-left:0;}
+[dir="rtl"] .level-head::after, [dir="rtl"] .group-head::after{margin:0;}
+[dir="rtl"] .detail-head{border-left:0; border-right:3px solid var(--cat); padding-left:0; padding-right:12px;}
+[dir="rtl"] .check-group .group-head, [dir="rtl"] .plan-term-head{text-align:right;}
+[dir="rtl"] .row-note, [dir="rtl"] .row-verify{margin-left:0; margin-right:100px;}
+[dir="rtl"] .check-row label{grid-template-columns: 18px 70px 1fr auto 34px;}
+[dir="rtl"] table.cmp th, [dir="rtl"] table.cmp td{text-align:right;}
+[dir="rtl"] .rules li::before{content:'– ';}
+[dir="rtl"] .plan-summary button{margin-left:0; margin-right:auto;}
+[dir="rtl"] .dash-card .of{margin-left:0; margin-right:6px;}
+/* The prerequisite graph is a left-to-right timeline (100-level -> 400-level).
+   Arrows encode time, so the graph itself stays LTR even in Arabic; only the
+   surrounding chrome flips. */
+[dir="rtl"] .graph, [dir="rtl"] .graph-scroll{direction: ltr;}
+/* Node text keeps its own direction (dir="auto" in the markup) so an English
+   name is not truncated from the wrong end by the RTL page. */
+[dir="rtl"] .cnode{text-align:left;}
+[dir="rtl"] .list-row{direction: rtl;}
+
 /* ---- 3. Nav ---------------------------------------------------------------- */
 nav{
   position: sticky; top:0; z-index:50;
@@ -131,6 +235,14 @@ nav{
   font-size: 15px; color: var(--paper); text-decoration:none;
 }
 .logo span{color: var(--accent);}
+/* Wordmark drawn in Thmanyah and converted to outlines (see tools/make_wordmark.py).
+   An <img> cannot inherit the page's text colour, so there are two files and the
+   theme decides which one is shown. */
+.logo{display:inline-flex; align-items:center; line-height:0;}
+.logo-mark{height:26px; width:auto; display:block;}
+.logo .for-light{display:none;}
+:root[data-theme="light"] .logo .for-dark{display:none;}
+:root[data-theme="light"] .logo .for-light{display:block;}
 .nav-links{display:flex; gap:32px; list-style:none; align-items:center;}
 .nav-links a{
   font-family: var(--mono); font-size: 13px; color: var(--muted);
@@ -146,6 +258,16 @@ nav{
   transition: color 0.2s, border-color 0.2s;
 }
 .theme-toggle:hover{color: var(--paper); border-color: var(--accent2);}
+
+/* Language toggle: shows the language you would switch TO. */
+.lang-toggle{
+  font-family: var(--mono); font-size:12px; font-weight:700; color: var(--muted);
+  border:1px solid var(--card-border); border-radius:20px;
+  min-width:34px; padding:6px 10px; line-height:1.2;
+  transition: color 0.2s, border-color 0.2s;
+}
+.lang-toggle:hover{color: var(--accent); border-color: var(--accent);}
+.lang-toggle[lang="ar"] .label{font-family: var(--sans-ar); font-size:14px;}
 
 /* ---- 4. Hero + terminal ---------------------------------------------------- */
 .hero{
@@ -297,6 +419,9 @@ h1 em{font-style:normal; color: var(--accent2);}
 }
 .course-card h3{ font-size:17px; font-weight:600; line-height:1.3; }
 .course-card p{font-size:13px; color: var(--muted);}
+/* The course name in the other language, under the main one. */
+.alt-name{font-size:13px; color: var(--muted-dim); margin-top:-6px;}
+.alt-name:lang(ar){font-size:15px;}
 .course-card .meta{
   font-family: var(--mono); font-size:11px; color: var(--muted-dim);
   display:flex; gap:14px; margin-top:auto; padding-top:10px;

@@ -31,9 +31,11 @@
    in one plan never leak into the other (course ids overlap between plans).
 ---------------------------------------------------------------------------- */
 const CATALOGS = [
-  { id: '2024', url: 'data/curriculum.json',      label: '2024/2025 or later' },
-  { id: '2018', url: 'data/curriculum-2018.json', label: 'Fall 2018 – 2023/2024' },
+  { id: '2024', url: 'data/curriculum.json',      labelKey: 'home.pick2024' },
+  { id: '2018', url: 'data/curriculum-2018.json', labelKey: 'home.pick2018' },
 ];
+/** Catalog label in the current language (also used by the home dashboard). */
+const catalogLabel = cat => t(cat.labelKey);
 const CATALOG_KEY = 'curriculum.catalog';
 const passedKey = () => `curriculum.passed.${CATALOG.id}`;
 
@@ -45,7 +47,11 @@ let UNLOCKS = new Map();        // id -> [ids that list it as a prerequisite]
 let NOTES_BY_CODE = new Map();  // "CS201" -> course from courses.json (for the notes link)
 
 const hasGraph = data => !(data.dataStatus && data.dataStatus.prerequisitesSourced === false);
-const catOf = c => DATA.categories[c.category] || { label: c.category, accent: '#888' };
+/** Category metadata, with the Arabic label swapped in when Arabic is active. */
+function catOf(c){
+  const cat = DATA.categories[c.category] || { label: c.category, accent: '#888' };
+  return (currentLang() === 'ar' && cat.labelAr) ? { ...cat, label: cat.labelAr } : cat;
+}
 
 /* ---- 2. Graph derivation ---------------------------------------------------- */
 function buildGraph(data){
@@ -142,8 +148,8 @@ function nodeHTML(c){
     <button type="button" class="cnode ${unlocks >= 5 ? 'choke' : ''}" data-id="${esc(c.id)}"
             style="--cat:${esc(catOf(c).accent)}"
             aria-label="${esc(c.short)} ${esc(c.name)}, ${c.credits} credits${unlocks ? `, unlocks ${unlocks}` : ''}">
-      <span class="code">${esc(c.short)}${c.conditions?.length ? ' <span class="cond" title="has a condition">!</span>' : ''}</span>
-      <span class="name">${esc(c.name)}</span>
+      <span class="code" dir="ltr">${esc(c.short)}${c.conditions?.length ? ` <span class="cond" title="${t('cur.legendCondition')}">!</span>` : ''}</span>
+      <span class="name" dir="auto">${esc(currentLang() === 'ar' && c.nameAr ? c.nameAr : c.name)}</span>
       <span class="meta">${c.credits} cr${unlocks ? ` · unlocks ${unlocks}` : ''}${hasNotes ? ' · ≡' : ''}</span>
     </button>`;
 }
@@ -185,20 +191,21 @@ function renderList(){
       ${COLUMNS.filter(c => c.level === level).flatMap(c => c.ids).map(id => {
         const c = BY_ID.get(id);
         const needs = (c.prerequisites || []).map(p => BY_ID.get(p)?.short || p).join(', ');
-        return `<div class="list-row">${nodeHTML(c)}<span class="needs">${needs ? 'needs ' + esc(needs) : 'no prerequisites'}${c.verify ? ' · <em>unconfirmed</em>' : ''}</span></div>`;
+        return `<div class="list-row">${nodeHTML(c)}<span class="needs">${needs ? esc(t('cur.needs', { list: needs })) : t('cur.noPrereqs')}${c.verify ? ` · <em>${t('cur.unconfirmedShort')}</em>` : ''}</span></div>`;
       }).join('')}
     </section>`).join('');
   $('#edges').innerHTML = '';
 }
 
 function renderLegend(){
+  const ar = currentLang() === 'ar';
   const cats = Object.values(DATA.categories).map(c =>
-    `<span class="legend-item"><i style="background:${esc(c.accent)}"></i>${esc(c.label)}</span>`).join('');
+    `<span class="legend-item"><i style="background:${esc(c.accent)}"></i>${esc(ar && c.labelAr ? c.labelAr : c.label)}</span>`).join('');
   $('#legend').innerHTML = cats + `
-    <span class="legend-item"><i class="legend-choke"></i>chokepoint (unlocks 5+)</span>
-    <span class="legend-item"><i class="legend-dash"></i>unconfirmed prerequisite</span>
-    <span class="legend-item"><i class="legend-cond">!</i>extra condition</span>
-    <span class="legend-item"><i class="legend-cond">≡</i>has notes on this site</span>`;
+    <span class="legend-item"><i class="legend-choke"></i>${t('cur.legendChoke')}</span>
+    <span class="legend-item"><i class="legend-dash"></i>${t('cur.legendDashed')}</span>
+    <span class="legend-item"><i class="legend-cond">!</i>${t('cur.legendCondition')}</span>
+    <span class="legend-item"><i class="legend-cond">≡</i>${t('common.hasNotes')}</span>`;
 }
 
 /* ---- 5. Selection + detail panel ------------------------------------------- */
@@ -239,31 +246,34 @@ function courseChip(id){
 
 function renderDetail(){
   const box = $('#detail');
-  if(!selected){ box.innerHTML = `<div class="empty">Select a course to see its details.</div>`; return; }
+  if(!selected){ box.innerHTML = `<div class="empty">${t('cur.selectCourse')}</div>`; return; }
   const c = BY_ID.get(selected), unlocks = UNLOCKS.get(c.id), notes = NOTES_BY_CODE.get(c.short);
   const status = mode === 'plan' ? availability(c.id) : null;
+  // In Arabic, lead with the Arabic course name and keep English underneath.
+  const arFirst = currentLang() === 'ar' && c.nameAr;
   box.innerHTML = `
     <div class="detail-head" style="--cat:${esc(catOf(c).accent)}">
       <div class="code">${esc(c.short)} · ${esc(c.id)}</div>
-      <h3>${esc(c.name)}</h3>
-      ${c.nameAr ? `<div class="ar" lang="ar" dir="rtl">${esc(c.nameAr)}</div>` : ''}
-      <div class="facts"><span>${c.credits} credits</span><span>·</span><span>${c.level}-level</span><span>·</span><span>${esc(catOf(c).label)}</span></div>
+      <h3 dir="auto">${esc(arFirst ? c.nameAr : c.name)}</h3>
+      ${arFirst ? `<div class="ar" lang="en" dir="ltr">${esc(c.name)}</div>`
+                : (c.nameAr ? `<div class="ar" lang="ar" dir="rtl">${esc(c.nameAr)}</div>` : '')}
+      <div class="facts"><span>${c.credits} ${t('common.credits')}</span><span>·</span><span>${t('common.level', { n: c.level / 100 })}</span><span>·</span><span>${esc(catOf(c).label)}</span></div>
     </div>
     ${status ? `
-    <label class="passed-toggle"><input type="checkbox" data-passed="${esc(c.id)}" ${passed.has(c.id) ? 'checked' : ''}> I've passed this course</label>
+    <label class="passed-toggle"><input type="checkbox" data-passed="${esc(c.id)}" ${passed.has(c.id) ? 'checked' : ''}> ${t('cur.passedToggle')}</label>
     <div class="status status-${status.state}">${esc(status.text)}</div>` : ''}
     ${c.note ? `<p class="detail-note">${esc(c.note)}</p>` : ''}
-    ${c.verify ? `<p class="detail-verify">⚠ Unconfirmed: ${esc(c.verify)}</p>` : ''}
+    ${c.verify ? `<p class="detail-verify">⚠ ${t('cur.unconfirmed')} ${esc(c.verify)}</p>` : ''}
     <dl>
-      <dt>Prerequisites</dt>
-      <dd>${c.prerequisites?.length ? c.prerequisites.map(courseChip).join(' ') : '<span class="muted">none</span>'}</dd>
-      ${c.conditions?.length ? `<dt>Conditions</dt><dd>${c.conditions.map(x => `<span class="note-tag">${esc(x.label)}</span>`).join(' ')}</dd>` : ''}
-      <dt>Unlocks <span class="muted">(${unlocks.length} direct · ${descendants(c.id).size} total)</span></dt>
-      <dd>${unlocks.length ? unlocks.map(courseChip).join(' ') : '<span class="muted">nothing — a leaf course</span>'}</dd>
-      <dt>Full chain</dt>
-      <dd class="muted">${ancestors(c.id).size} course${ancestors(c.id).size === 1 ? '' : 's'} before it</dd>
+      <dt>${t('cur.prerequisites')}</dt>
+      <dd>${c.prerequisites?.length ? c.prerequisites.map(courseChip).join(' ') : `<span class="muted">${t('common.none')}</span>`}</dd>
+      ${c.conditions?.length ? `<dt>${t('cur.conditions')}</dt><dd>${c.conditions.map(x => `<span class="note-tag">${esc(x.label)}</span>`).join(' ')}</dd>` : ''}
+      <dt>${t('cur.unlocks')} <span class="muted">${t('cur.unlocksCount', { direct: unlocks.length, total: descendants(c.id).size })}</span></dt>
+      <dd>${unlocks.length ? unlocks.map(courseChip).join(' ') : `<span class="muted">${t('cur.leaf')}</span>`}</dd>
+      <dt>${t('cur.fullChain')}</dt>
+      <dd class="muted">${t('cur.chainCount', { n: ancestors(c.id).size })}</dd>
     </dl>
-    ${notes ? `<a class="btn btn-ghost btn-sm" href="${courseUrl(notes)}">notes for ${esc(c.short)} →</a>` : ''}`;
+    ${notes ? `<a class="btn btn-ghost btn-sm" href="${courseUrl(notes)}">${t('cur.notesFor', { code: c.short })}</a>` : ''}`;
 }
 
 /* ---- 6. Passed tracking (shared) + Plan mode (graph plans only) -----------
@@ -285,7 +295,7 @@ function togglePassed(id, on){
   savePassed(); refreshPassedViews();
 }
 function resetPassed(){
-  if(!confirm('Clear all passed courses for this plan?')) return;
+  if(!confirm(t('cur.clearConfirm'))) return;
   passed.clear(); savePassed(); refreshPassedViews();
 }
 /** Re-render whatever is showing passed state for the active plan. */
@@ -296,15 +306,17 @@ function refreshPassedViews(){
 
 function availability(id){
   const c = BY_ID.get(id);
-  if(passed.has(id)) return { state: 'passed', text: 'Passed' };
+  if(passed.has(id)) return { state: 'passed', text: t('cur.statusPassed') };
   const missing = (c.prerequisites || []).filter(p => !passed.has(p)).map(p => BY_ID.get(p)?.short || p);
-  if(missing.length) return { state: 'locked', text: `Locked — still need ${missing.join(', ')}` };
+  // Arabic uses its own comma (U+060C).
+  const listSep = currentLang() === 'ar' ? '، ' : ', ';
+  if(missing.length) return { state: 'locked', text: t('cur.statusLocked', { list: missing.join(listSep) }) };
   for(const cond of (c.conditions || [])){
     if(cond.type === 'credits-passed' && creditsPassed() < cond.minimum)
-      return { state: 'locked', text: `Locked — ${cond.label} (you have ${creditsPassed()})` };
-    if(cond.type === 'approval') return { state: 'conditional', text: `Prerequisites met — ${cond.label}` };
+      return { state: 'locked', text: t('cur.statusLockedCredits', { label: cond.label, n: creditsPassed() }) };
+    if(cond.type === 'approval') return { state: 'conditional', text: t('cur.statusConditional', { label: cond.label }) };
   }
-  return { state: 'available', text: 'Available — you can take this now' };
+  return { state: 'available', text: t('cur.statusAvailable') };
 }
 
 function applyPlanClasses(){
@@ -341,7 +353,7 @@ function renderChecklist(){
     const done  = courses.filter(c => passed.has(c.id)).reduce((s, c) => s + c.credits, 0);
     return `
       <section class="check-group" style="--cat:${esc(cat.accent)}">
-        <h3 class="group-head">${esc(cat.label)} <span>${done} / ${total} credits</span></h3>
+        <h3 class="group-head">${esc(currentLang() === 'ar' && cat.labelAr ? cat.labelAr : cat.label)} <span>${done} / ${total} ${t('common.credits')}</span></h3>
         <ul class="check-list">
           ${courses.map(c => {
             const notes = NOTES_BY_CODE.get(c.short);
@@ -350,12 +362,12 @@ function renderChecklist(){
               <label>
                 <input type="checkbox" data-passed="${esc(c.id)}" ${passed.has(c.id) ? 'checked' : ''}>
                 <span class="code">${esc(c.short)}</span>
-                <span class="name">${esc(c.name)}${notes ? ` <a class="notes-link" href="${courseUrl(notes)}" title="notes on this site">≡</a>` : ''}</span>
-                <span class="cr">${c.credits} cr</span>
+                <span class="name" dir="auto">${esc(currentLang() === 'ar' && c.nameAr ? c.nameAr : c.name)}${notes ? ` <a class="notes-link" href="${courseUrl(notes)}" title="${t('common.hasNotes')}">≡</a>` : ''}</span>
+                <span class="cr">${c.credits} ${t('cur.cr')}</span>
                 <span class="lvl">${c.level}</span>
               </label>
               ${c.note ? `<div class="row-note">${esc(c.note)}</div>` : ''}
-              ${c.verify ? `<div class="row-verify">unconfirmed: ${esc(c.verify)}</div>` : ''}
+              ${c.verify ? `<div class="row-verify">${t('cur.unconfirmedShort')}: ${esc(c.verify)}</div>` : ''}
             </li>`;
           }).join('')}
         </ul>
@@ -367,53 +379,56 @@ function renderChecklist(){
   $('#check-total').textContent = DATA.program.totalCredits;
   $('#check-count').textContent = passed.size;
 
-  const r = DATA.program.requirements;
   $('#check-rules').innerHTML = `
-    <h3 class="group-head">Elective rules</h3>
-    <ul class="rules rules-strong">${DATA.program.electiveRules.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
-    <h3 class="group-head">Credit breakdown <span>${DATA.program.totalCredits}</span></h3>
+    <h3 class="group-head">${t('cur.electiveRules')}</h3>
+    <ul class="rules rules-strong">${DATA.program.electiveRules.map(x => `<li dir="auto">${esc(x)}</li>`).join('')}</ul>
+    <h3 class="group-head">${t('cur.creditBreakdown')} <span>${DATA.program.totalCredits}</span></h3>
+    ${requirementsListHTML()}
+    <p class="muted-note">${t('cur.checklistNote')}</p>`;
+}
+
+/** The credit breakdown, shared by the checklist sidebar and the study-plan tab. */
+function requirementsListHTML(){
+  const r = DATA.program.requirements;
+  const split = (a, b, labelA, labelB) => `${a} ${t(labelA)} + ${b} ${t(labelB)}`;
+  return `
     <ul class="rules">
-      <li>University: ${r.university.total} (${r.university.compulsory} compulsory + ${r.university.elective} elective)</li>
-      <li>College of Science: ${r.collegeOfScience.total} (${r.collegeOfScience.compulsory} compulsory + ${r.collegeOfScience.elective} elective)</li>
-      <li>Department: ${r.department.total} (${r.department.core} core + ${r.department.elective} elective)</li>
-      <li>Free electives: ${r.freeElectives}</li>
-    </ul>
-    <p class="muted-note">University, free and unlisted science electives aren't courses in this file, so the credit count above only covers what's on the list.</p>`;
+      <li>${t('cur.reqUniversity')}: ${r.university.total} (${split(r.university.compulsory, r.university.elective, 'cur.reqCompulsory', 'cur.reqElective')})</li>
+      <li>${t('cur.reqCollege')}: ${r.collegeOfScience.total} (${split(r.collegeOfScience.compulsory, r.collegeOfScience.elective, 'cur.reqCompulsory', 'cur.reqElective')})</li>
+      <li>${t('cur.reqDepartment')}: ${r.department.total} (${split(r.department.core, r.department.elective, 'cur.reqCore', 'cur.reqElective')})</li>
+      <li>${t('cur.reqFree')}: ${r.freeElectives}</li>
+    </ul>`;
 }
 
 /* ---- 8. Study plan tab -------------------------------------------------- */
 function renderStudyPlan(){
-  const years = [...new Set(DATA.suggestedStudyPlan.map(t => t.year))];
+  // NB: loop variables are `term`/`plan`, never `t` — `t` is the translator.
+  const years = [...new Set(DATA.suggestedStudyPlan.map(p => p.year))];
   $('#study-plan').innerHTML = years.map(year => {
-    const terms = DATA.suggestedStudyPlan.filter(t => t.year === year);
-    const yearCredits = terms.reduce((s, t) => s + t.credits, 0);
+    const terms = DATA.suggestedStudyPlan.filter(p => p.year === year);
+    const yearCredits = terms.reduce((s, p) => s + p.credits, 0);
     return `
       <section class="plan-year">
-        <h3 class="group-head">Year ${year} <span>${yearCredits} credits</span></h3>
+        <h3 class="group-head">${t('cur.year', { n: year })} <span>${t('cur.creditsN', { n: yearCredits })}</span></h3>
         <div class="plan-terms">
-          ${terms.map(t => `
+          ${terms.map(term => `
             <div class="plan-term">
-              <div class="plan-term-head"><strong>${esc(t.term)}</strong><span>${t.credits} cr</span></div>
-              <ul>${t.slots.map(slot => {
+              <div class="plan-term-head"><strong>${esc(term.term)}</strong><span>${term.credits} ${t('cur.cr')}</span></div>
+              <ul>${term.slots.map(slot => {
                 const c = BY_ID.get(slot);
+                const label = currentLang() === 'ar' && c?.nameAr ? c.nameAr : c?.name;
                 return c
-                  ? `<li class="slot" style="--cat:${esc(catOf(c).accent)}"><button type="button" class="slot-link" data-jump="${esc(c.id)}"><b>${esc(c.short)}</b> ${esc(c.name)}</button><span>${c.credits}</span></li>`
+                  ? `<li class="slot" style="--cat:${esc(catOf(c).accent)}"><button type="button" class="slot-link" data-jump="${esc(c.id)}" dir="auto"><b>${esc(c.short)}</b> ${esc(label)}</button><span>${c.credits}</span></li>`
                   : `<li class="slot placeholder"><span>${esc(slot)}</span></li>`;
               }).join('')}</ul>
             </div>`).join('')}
         </div>
       </section>`;
   }).join('');
-  const r = DATA.program.requirements;
   $('#plan-rules').innerHTML = `
-    <h3 class="group-head">Degree requirements <span>${DATA.program.totalCredits} credits</span></h3>
-    <ul class="rules">
-      <li>University: ${r.university.total} (${r.university.compulsory} compulsory + ${r.university.elective} elective)</li>
-      <li>College of Science: ${r.collegeOfScience.total} (${r.collegeOfScience.compulsory} compulsory + ${r.collegeOfScience.elective} elective)</li>
-      <li>Department: ${r.department.total} (${r.department.core} core + ${r.department.elective} elective)</li>
-      <li>Free electives: ${r.freeElectives}</li>
-      ${DATA.program.electiveRules.map(x => `<li>${esc(x)}</li>`).join('')}
-    </ul>`;
+    <h3 class="group-head">${t('cur.requirements')} <span>${t('cur.creditsN', { n: DATA.program.totalCredits })}</span></h3>
+    ${requirementsListHTML()}
+    <ul class="rules">${DATA.program.electiveRules.map(x => `<li dir="auto">${esc(x)}</li>`).join('')}</ul>`;
 }
 
 /* ---- 9. Compare tab -----------------------------------------------------------
@@ -423,7 +438,7 @@ function renderStudyPlan(){
 ---------------------------------------------------------------------------- */
 function renderCompare(){
   const [oldC, newC] = [ALL.get('2018'), ALL.get('2024')];
-  if(!oldC || !newC){ $('#compare').innerHTML = `<div class="empty">Both catalogs are needed to compare.</div>`; return; }
+  if(!oldC || !newC){ $('#compare').innerHTML = `<div class="empty">${t('cur.bothNeeded')}</div>`; return; }
   // Ignore cosmetic spelling differences ("&" vs "and", "CS" vs "Computer Science").
   const norm = n => n.toLowerCase().replace(/&/g, 'and').replace(/cs/g, 'computer science').replace(/\s+/g, ' ').trim();
   const sameName = (a, b) => norm(a) === norm(b);
@@ -443,7 +458,7 @@ function renderCompare(){
   const credits = [...O.values()].filter(c => N.has(c.short) && N.get(c.short).credits !== c.credits)
     .map(c => ({ code: c.short, from: c.credits, to: N.get(c.short).credits }));
 
-  const row = (code, name, a, b) => `<tr><td class="mono">${esc(code)}</td><td>${esc(name)}</td><td>${a}</td><td>${b}</td></tr>`;
+  const row = (code, name, a, b) => `<tr><td class="mono">${esc(code)}</td><td dir="auto">${esc(name)}</td><td>${a}</td><td>${b}</td></tr>`;
   const table = (title, head, rows) => rows.length ? `
     <h3 class="group-head">${title} <span>${rows.length}</span></h3>
     <div class="table-scroll"><table class="cmp"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>` : '';
@@ -451,27 +466,27 @@ function renderCompare(){
   const rq = (d, k) => d.program.requirements[k];
   $('#compare').innerHTML = `
     <div class="cmp-summary">
-      <div><b>${esc(oldC.program.catalogYear)}</b> ${esc(oldC.program.appliesTo)} · ${oldC.program.totalCredits} credits · ${oldC.courses.length} courses</div>
-      <div><b>${esc(newC.program.catalogYear)}</b> ${esc(newC.program.appliesTo)} · ${newC.program.totalCredits} credits · ${newC.courses.length} courses</div>
+      <div><b>${esc(oldC.program.catalogYear)}</b> ${esc(oldC.program.appliesTo)} · ${t('cur.creditsN', { n: oldC.program.totalCredits })} · ${t('cur.coursesN', { n: oldC.courses.length })}</div>
+      <div><b>${esc(newC.program.catalogYear)}</b> ${esc(newC.program.appliesTo)} · ${t('cur.creditsN', { n: newC.program.totalCredits })} · ${t('cur.coursesN', { n: newC.courses.length })}</div>
     </div>
-    ${table('Credit requirements', ['Area', '', oldC.program.catalogYear, newC.program.catalogYear], [
-      row('Total', '', oldC.program.totalCredits, newC.program.totalCredits),
-      row('University', '', rq(oldC,'university').total, rq(newC,'university').total),
-      row('College of Science', '', rq(oldC,'collegeOfScience').total, rq(newC,'collegeOfScience').total),
-      row('Department core', '', rq(oldC,'department').core, rq(newC,'department').core),
-      row('Department elective', '', rq(oldC,'department').elective, rq(newC,'department').elective),
-      row('Free electives', '', oldC.program.freeElectives ?? rq(oldC,'freeElectives'), newC.program.freeElectives ?? rq(newC,'freeElectives')),
+    ${table(t('cur.cmpCredits'), [t('cur.colArea'), '', oldC.program.catalogYear, newC.program.catalogYear], [
+      row(t('cur.reqTotal'), '', oldC.program.totalCredits, newC.program.totalCredits),
+      row(t('cur.reqUniversity'), '', rq(oldC,'university').total, rq(newC,'university').total),
+      row(t('cur.reqCollege'), '', rq(oldC,'collegeOfScience').total, rq(newC,'collegeOfScience').total),
+      row(t('cur.reqDeptCore'), '', rq(oldC,'department').core, rq(newC,'department').core),
+      row(t('cur.reqDeptElective'), '', rq(oldC,'department').elective, rq(newC,'department').elective),
+      row(t('cur.reqFree'), '', oldC.program.freeElectives ?? rq(oldC,'freeElectives'), newC.program.freeElectives ?? rq(newC,'freeElectives')),
     ])}
-    ${table('Moved between categories', ['Code', 'Course', oldC.program.catalogYear, newC.program.catalogYear], moved.map(m => row(m.c.short, m.c.name, esc(m.from), esc(m.to))))}
-    ${table('Renumbered', ['Old code', 'Course', 'New code', ''], renumbered.map(r => row(r.from.short, r.from.name, esc(r.to.short), '')))}
-    ${table('Renamed', ['Code', '', oldC.program.catalogYear, newC.program.catalogYear], renamed.map(r => row(r.code, '', esc(r.from), esc(r.to))))}
-    ${table('Credits changed', ['Code', 'Course', oldC.program.catalogYear, newC.program.catalogYear], credits.map(r => row(r.code, O.get(r.code).name, r.from, r.to)))}
-    ${table('Dropped in ' + newC.program.catalogYear, ['Code', 'Course', 'Was', ''], dropped.filter(c => !renumSet.has(c.short)).map(c => row(c.short, c.name, esc(catLabel(oldC, c)), '')))}
-    ${table('New in ' + newC.program.catalogYear, ['Code', 'Course', 'Now', ''], added.filter(c => !renumSet.has(c.short)).map(c => row(c.short, c.name, esc(catLabel(newC, c)), '')))}
-    <h3 class="group-head">Elective rules</h3>
+    ${table(t('cur.cmpMoved'), [t('cur.colCode'), t('cur.colCourse'), oldC.program.catalogYear, newC.program.catalogYear], moved.map(m => row(m.c.short, m.c.name, esc(m.from), esc(m.to))))}
+    ${table(t('cur.cmpRenumbered'), [t('cur.colOldCode'), t('cur.colCourse'), t('cur.colNewCode'), ''], renumbered.map(r => row(r.from.short, r.from.name, esc(r.to.short), '')))}
+    ${table(t('cur.cmpRenamed'), [t('cur.colCode'), '', oldC.program.catalogYear, newC.program.catalogYear], renamed.map(r => row(r.code, '', esc(r.from), esc(r.to))))}
+    ${table(t('cur.cmpCreditsChanged'), [t('cur.colCode'), t('cur.colCourse'), oldC.program.catalogYear, newC.program.catalogYear], credits.map(r => row(r.code, O.get(r.code).name, r.from, r.to)))}
+    ${table(t('cur.cmpDropped', { year: newC.program.catalogYear }), [t('cur.colCode'), t('cur.colCourse'), t('cur.colWas'), ''], dropped.filter(c => !renumSet.has(c.short)).map(c => row(c.short, c.name, esc(catLabel(oldC, c)), '')))}
+    ${table(t('cur.cmpNew', { year: newC.program.catalogYear }), [t('cur.colCode'), t('cur.colCourse'), t('cur.colNow'), ''], added.filter(c => !renumSet.has(c.short)).map(c => row(c.short, c.name, esc(catLabel(newC, c)), '')))}
+    <h3 class="group-head">${t('cur.electiveRules')}</h3>
     <div class="cmp-rules">
-      <div><h4>${esc(oldC.program.catalogYear)}</h4><ul class="rules">${oldC.program.electiveRules.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
-      <div><h4>${esc(newC.program.catalogYear)}</h4><ul class="rules">${newC.program.electiveRules.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div><h4>${esc(oldC.program.catalogYear)}</h4><ul class="rules">${oldC.program.electiveRules.map(x => `<li dir="auto">${esc(x)}</li>`).join('')}</ul></div>
+      <div><h4>${esc(newC.program.catalogYear)}</h4><ul class="rules">${newC.program.electiveRules.map(x => `<li dir="auto">${esc(x)}</li>`).join('')}</ul></div>
     </div>`;
 }
 
@@ -489,12 +504,12 @@ function setView(next){
 /** Build the tab strip for the active plan and show the first tab. */
 function buildTabs(){
   const tabs = [];
-  if(hasGraph(DATA)) tabs.push({ id: 'map', label: 'Prerequisite map' });
-  else tabs.push({ id: 'checklist', label: 'Requirements checklist' });
-  if(DATA.suggestedStudyPlan) tabs.push({ id: 'plan', label: 'Suggested study plan' });
-  if(ALL.size > 1) tabs.push({ id: 'compare', label: 'Compare plans' });
-  $('#tabs').innerHTML = tabs.map(t =>
-    `<button type="button" role="tab" class="tab" id="tab-${t.id}" data-panel="panel-${t.id}" aria-selected="false" aria-controls="panel-${t.id}">${t.label}</button>`).join('');
+  if(hasGraph(DATA)) tabs.push({ id: 'map', label: t('cur.tabMap') });
+  else tabs.push({ id: 'checklist', label: t('cur.tabChecklist') });
+  if(DATA.suggestedStudyPlan) tabs.push({ id: 'plan', label: t('cur.tabPlan') });
+  if(ALL.size > 1) tabs.push({ id: 'compare', label: t('cur.tabCompare') });
+  $('#tabs').innerHTML = tabs.map(tab =>
+    `<button type="button" role="tab" class="tab" id="tab-${tab.id}" data-panel="panel-${tab.id}" aria-selected="false" aria-controls="panel-${tab.id}">${esc(tab.label)}</button>`).join('');
   showTab('panel-' + tabs[0].id);
 }
 
@@ -522,15 +537,19 @@ function activate(catalogId){
   selected = null; mode = 'explore';
 
   // Header
-  $('#program-name').textContent = `${DATA.program.name} · ${DATA.program.catalogYear} plan`;
-  $('#program-meta').textContent = DATA.program.appliesTo;
+  const ar = currentLang() === 'ar';
+  const progName = ar && DATA.program.nameAr ? DATA.program.nameAr : DATA.program.name;
+  $('#program-name').textContent = `${progName} · ${DATA.program.catalogYear}`;
+  $('#program-meta').textContent = ar && DATA.program.appliesToAr ? DATA.program.appliesToAr : DATA.program.appliesTo;
   $('#source-link').href = DATA.program.source;
-  $('#page-title').textContent = hasGraph(DATA) ? 'Which course unlocks what' : 'Your requirements checklist';
+  $('#page-title').textContent = hasGraph(DATA) ? t('cur.unlocksTitle') : t('cur.checklistTitle');
 
   // Missing-data notice (only when the file says prerequisites aren't sourced).
+  // The warning text itself comes from the data file and stays in English —
+  // it is a note about the source document, not interface copy.
   const notice = $('#data-notice');
   notice.hidden = hasGraph(DATA);
-  if(!hasGraph(DATA)) notice.innerHTML = `<strong>No prerequisite data for this plan.</strong> ${esc(DATA.dataStatus.warning)}`;
+  if(!hasGraph(DATA)) notice.innerHTML = `<strong>${t('cur.noPrereqStrong')}</strong> <span dir="auto">${esc(DATA.dataStatus.warning)}</span>`;
 
   // Views
   if(hasGraph(DATA)){
@@ -555,7 +574,7 @@ async function initCurriculum(){
   NOTES_BY_CODE = new Map(courses.map(c => [c.code.replace(' ', ''), c]));
 
   $('#catalog-buttons').innerHTML = CATALOGS.map(c =>
-    `<button type="button" class="tag-chip" data-catalog="${c.id}" aria-pressed="false">${esc(c.label)}</button>`).join('');
+    `<button type="button" class="tag-chip" data-catalog="${c.id}" aria-pressed="false">${esc(catalogLabel(c))}</button>`).join('');
 
   // ?catalog=<id> (from the home page) beats the saved choice; ?mode=plan opens Plan mode.
   const params = new URLSearchParams(location.search);
@@ -565,15 +584,16 @@ async function initCurriculum(){
   if(params.get('mode') === 'plan' && hasGraph(DATA)) setMode('plan');
 
   // --- events (delegated)
+  // NB: `el`, not `t` — `t` is the translation function and must not be shadowed.
   document.addEventListener('click', e => {
-    const t = e.target;
-    const node = t.closest('.cnode');        if(node){ select(node.dataset.id); return; }
-    const jump = t.closest('[data-jump]');   if(jump){ jumpTo(jump.dataset.jump); return; }
-    const cat  = t.closest('[data-catalog]');if(cat){ activate(cat.dataset.catalog); return; }
-    const md   = t.closest('[data-mode]');   if(md){ setMode(md.dataset.mode); return; }
-    const vw   = t.closest('[data-view]');   if(vw){ setView(vw.dataset.view); return; }
-    const tab  = t.closest('[role="tab"]');  if(tab){ showTab(tab.dataset.panel); return; }
-    if(t.closest('[data-reset]')) resetPassed();
+    const el = e.target;
+    const node = el.closest('.cnode');        if(node){ select(node.dataset.id); return; }
+    const jump = el.closest('[data-jump]');   if(jump){ jumpTo(jump.dataset.jump); return; }
+    const cat  = el.closest('[data-catalog]');if(cat){ activate(cat.dataset.catalog); return; }
+    const md   = el.closest('[data-mode]');   if(md){ setMode(md.dataset.mode); return; }
+    const vw   = el.closest('[data-view]');   if(vw){ setView(vw.dataset.view); return; }
+    const tab  = el.closest('[role="tab"]');  if(tab){ showTab(tab.dataset.panel); return; }
+    if(el.closest('[data-reset]')) resetPassed();
   });
   document.addEventListener('change', e => {
     if(e.target.matches('[data-passed]')) togglePassed(e.target.dataset.passed, e.target.checked);
@@ -614,9 +634,10 @@ async function planSummary(){
 // Only boot the full page on curriculum.html; the home page loads this file
 // for planSummary() alone.
 if(document.body.dataset.page === 'curriculum')
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await initI18n();          // strings before anything renders
   initCurriculum().catch(err => {
     console.error(err);
-    $('main').innerHTML = `<div class="section"><div class="empty">Couldn't load the curriculum data. If you opened this file directly, serve it with <code>python -m http.server</code>.</div></div>`;
+    $('main').innerHTML = `<div class="section"><div class="empty">${t('cur.loadFail')}</div></div>`;
   });
 });

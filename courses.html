@@ -12,27 +12,41 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="css/style.css">
 <script>
-  try{ document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }catch(e){}
+  // Applied before first paint so neither the theme nor the text direction flashes.
+  try{
+    var d = document.documentElement;
+    d.dataset.theme = localStorage.getItem('theme') || 'dark';
+    var l = localStorage.getItem('lang') || 'en';
+    d.lang = l; d.dir = (l === 'ar' ? 'rtl' : 'ltr');
+  }catch(e){}
 </script>
 </head>
 <!--
   All courses, grouped by year level. Rendered from data/courses.json by
   main.js (initCourses). Search + level chips filter the grid live.
 -->
-<body data-page="courses">
+<body data-page="courses" data-title-key="courses.title">
 
-<a href="#course-grid" class="skip-link">Skip to courses</a>
+<a href="#course-grid" class="skip-link" data-i18n="skip.courses">Skip to courses</a>
 
-<nav aria-label="Main">
-  <a href="index.html" class="logo">NOTES<span>++</span></a>
+<nav data-i18n-aria-label="nav.main">
+  <a href="index.html" class="logo" data-i18n-aria-label="nav.homeLabel">
+    <img class="logo-mark for-dark" src="img/wordmark.svg" alt="Notes++" width="112" height="39">
+    <img class="logo-mark for-light" src="img/wordmark-dark.svg" alt="" aria-hidden="true" width="112" height="39">
+  </a>
   <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="courses.html" aria-current="page">Courses</a></li>
-    <li><a href="curriculum.html">Curriculum</a></li>
-    <li><a href="resources.html">Resources</a></li>
+    <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+    <li><a href="courses.html" aria-current="page" data-i18n="nav.courses">Courses</a></li>
+    <li><a href="curriculum.html" data-i18n="nav.curriculum">Curriculum</a></li>
+    <li><a href="resources.html" data-i18n="nav.resources">Resources</a></li>
     <li>
-      <button type="button" class="theme-toggle" aria-label="Switch to light mode">
-        <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
+      <button type="button" class="lang-toggle" aria-label="Switch language">
+        <span class="label">ع</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" class="theme-toggle" data-i18n-aria-label="theme.toLight">
+        <span class="icon" aria-hidden="true">☀</span><span class="label" data-i18n="theme.light">light</span>
       </button>
     </li>
   </ul>
@@ -43,18 +57,18 @@
 <section class="section section-first" id="courses">
   <div class="section-head">
     <div>
-      <h2>Courses</h2>
-      <p>Every course in the programme, grouped by year. Each one has its own page with notes, labs and links.</p>
+      <h2 data-i18n="courses.title">Courses</h2>
+      <p data-i18n="courses.sub">Every course in the programme, grouped by year. Each one has its own page with notes, labs and links.</p>
     </div>
     <div class="search">
-      <label for="search" class="sr-only">Search courses</label>
-      <input id="search" type="search" placeholder="search courses, notes, tags…" autocomplete="off">
+      <label for="search" class="sr-only" data-i18n="courses.searchLabel">Search courses</label>
+      <input id="search" type="search" data-i18n-placeholder="common.search" placeholder="search courses, notes, tags…" autocomplete="off">
     </div>
   </div>
 
   <div class="filter-rows">
-    <div class="tag-filters" id="subject-filters" role="group" aria-label="Filter by subject"></div>
-    <div class="tag-filters" id="level-filters" role="group" aria-label="Filter by course level"></div>
+    <div class="tag-filters" id="subject-filters" role="group" data-i18n-aria-label="common.filterSubject"></div>
+    <div class="tag-filters" id="level-filters" role="group" data-i18n-aria-label="common.filterLevel"></div>
   </div>
   <div id="search-count" class="result-count" aria-live="polite"></div>
 
@@ -65,10 +79,11 @@
 </main>
 
 <footer>
-  <div>Notes++ — a shared knowledge base, one course at a time</div>
-  <div class="footer-credit">© 2026 <span>retr0</span> · built with plain HTML, CSS &amp; JS · no frameworks, no tracking</div>
+  <div data-i18n="footer.tagline">Notes++ — a shared knowledge base, one course at a time</div>
+  <div class="footer-credit">© 2026 <span>retr0</span> <span data-i18n="footer.built">· built with plain HTML, CSS &amp; JS · no frameworks, no tracking</span></div>
 </footer>
 
+<script src="js/i18n.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

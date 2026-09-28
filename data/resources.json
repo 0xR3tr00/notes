@@ -1,5 +1,5 @@
 {
-  "_comment": "General links not tied to one course. Each group has a label, an accent colour and links (title, subject, url, description). subject is a short tag used for the filter chips — CS, MATH, MISC, or anything else; chips are generated from whatever values appear. YouTube URLs get a thumbnail automatically. Course-specific links belong in courses.json instead.",
+  "_comment": "General links not tied to one course. Each group has a label, an accent colour and links (title, subject, url, description). subject is a short tag used for the filter chips — CS, MATH, MISC, or anything else; chips are generated from whatever values appear. YouTube URLs get a thumbnail automatically. Course-specific links belong in courses.json instead. Optional Arabic: labelAr on a group, titleAr/descriptionAr on a link.",
   "groups": [
     {
       "label": "University & department",
@@ -9,15 +9,20 @@
           "title": "CS Department — Kuwait University",
           "subject": "CS",
           "url": "https://www.cs.ku.edu.kw/",
-          "description": "Official department site: announcements, major sheets, faculty pages and course descriptions."
+          "description": "Official department site: announcements, major sheets, faculty pages and course descriptions.",
+          "titleAr": "قسم علوم الحاسوب — جامعة الكويت",
+          "descriptionAr": "الموقع الرسمي للقسم: الإعلانات، وخطط التخصص، وصفحات أعضاء هيئة التدريس، وتوصيف المقررات."
         },
         {
           "title": "Math Department — past exams",
           "subject": "MATH",
           "url": "https://math.sci.kuniv.edu.kw/resources-and-educational-support/past-exams",
-          "description": "Past exam papers for the maths courses in the programme."
+          "description": "Past exam papers for the maths courses in the programme.",
+          "titleAr": "قسم الرياضيات — اختبارات سابقة",
+          "descriptionAr": "أوراق اختبارات سابقة لمقررات الرياضيات في البرنامج."
         }
-      ]
+      ],
+      "labelAr": "الجامعة والقسم"
     },
     {
       "label": "Study & reference",
@@ -27,15 +32,20 @@
           "title": "W3Schools",
           "subject": "CS",
           "url": "https://www.w3schools.com/",
-          "description": "Quick, example-driven tutorials for HTML, CSS, JavaScript, SQL, Python and more. Good for looking things up fast."
+          "description": "Quick, example-driven tutorials for HTML, CSS, JavaScript, SQL, Python and more. Good for looking things up fast.",
+          "titleAr": "W3Schools",
+          "descriptionAr": "دروس سريعة قائمة على الأمثلة في HTML وCSS وJavaScript وSQL وبايثون. مناسب للبحث السريع."
         },
         {
           "title": "GeeksforGeeks",
           "subject": "CS",
           "url": "https://www.geeksforgeeks.org/",
-          "description": "Data structures, algorithms, OS, DBMS and networking articles with worked examples — covers most of the CS core."
+          "description": "Data structures, algorithms, OS, DBMS and networking articles with worked examples — covers most of the CS core.",
+          "titleAr": "GeeksforGeeks",
+          "descriptionAr": "مقالات في هياكل البيانات والخوارزميات ونظم التشغيل وقواعد البيانات والشبكات مع أمثلة محلولة."
         }
-      ]
+      ],
+      "labelAr": "مواقع للدراسة والمراجعة"
     }
   ]
 }
