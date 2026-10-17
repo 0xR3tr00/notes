@@ -2,6 +2,11 @@
 
 A static course-notes site. No build step, no frameworks — plain HTML, CSS and JS.
 
+**Live site:** <https://0xr3tr00.github.io/notes/>
+
+Hosted on GitHub Pages from the `main` branch; every push to `main` redeploys it
+within a minute or two. If a change doesn't show up, hard-refresh (Ctrl + Shift + R).
+
 ## Run it locally
 
 The pages load `data/courses.json` with `fetch()`, which browsers block on `file://` URLs.
