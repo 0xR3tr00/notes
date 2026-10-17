@@ -50,8 +50,9 @@
       </button>
     </li>
     <li>
-      <button type="button" class="theme-toggle" data-i18n-aria-label="theme.toLight">
-        <span class="icon" aria-hidden="true">☀</span><span class="label" data-i18n="theme.light">light</span>
+      <!-- Label + aria-label are set by updateThemeButton() in main.js (they depend on the current theme). -->
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">
+        <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
       </button>
     </li>
   </ul>
@@ -71,7 +72,7 @@
   <!-- Catalog year switcher. Labelled by admission year — that's how students know which plan they're on. -->
   <div class="catalog-switch" role="group" aria-labelledby="catalog-label">
     <span id="catalog-label" data-i18n="cur.admitted">I was admitted:</span>
-    <div id="catalog-buttons"></div>
+    <div id="catalog-buttons" class="seg"></div>
   </div>
 
   <!-- Student-made study aid, not advising. Keep this visible. -->
@@ -91,11 +92,11 @@
 <!-- ============ Prerequisite map (plans with prerequisite data) ============ -->
 <section id="panel-map" role="tabpanel" class="section curriculum-section" hidden>
   <div class="map-toolbar">
-    <div class="mode-switch" role="group" data-i18n-aria-label="cur.mode">
+    <div class="mode-switch seg" role="group" data-i18n-aria-label="cur.mode">
       <button type="button" class="tag-chip" data-mode="explore" aria-pressed="true" data-i18n="cur.explore">Explore</button>
       <button type="button" class="tag-chip" data-mode="plan" aria-pressed="false" data-i18n="cur.planMode">Plan: what can I take?</button>
     </div>
-    <div class="view-switch" role="group" data-i18n-aria-label="cur.view">
+    <div class="view-switch seg" role="group" data-i18n-aria-label="cur.view">
       <button type="button" class="tag-chip" data-view="graph" aria-pressed="true" data-i18n="cur.graph">Graph</button>
       <button type="button" class="tag-chip" data-view="list" aria-pressed="false" data-i18n="cur.list">List</button>
     </div>
@@ -117,7 +118,7 @@
       </div>
     </div>
     <aside class="detail" id="detail" aria-live="polite">
-      <div class="empty" data-i18n="cur.selectCourse">Select a course to see its details.</div>
+      <div class="state state-empty"><b data-i18n="cur.selectCourse">Select a course to see its details.</b></div>
     </aside>
   </div>
 </section>
@@ -165,6 +166,7 @@
   <div class="footer-credit">© 2026 <span>retr0</span> <span data-i18n="footer.built">· built with plain HTML, CSS &amp; JS · no frameworks, no tracking</span></div>
 </footer>
 
+<script src="js/strings-en.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/main.js"></script>
 <script src="js/curriculum.js"></script>

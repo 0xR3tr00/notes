@@ -43,8 +43,9 @@
       </button>
     </li>
     <li>
-      <button type="button" class="theme-toggle" data-i18n-aria-label="theme.toLight">
-        <span class="icon" aria-hidden="true">☀</span><span class="label" data-i18n="theme.light">light</span>
+      <!-- Label + aria-label are set by updateThemeButton() in main.js (they depend on the current theme). -->
+      <button type="button" class="theme-toggle" aria-label="Switch to light mode">
+        <span class="icon" aria-hidden="true">☀</span><span class="label">light</span>
       </button>
     </li>
   </ul>
@@ -54,7 +55,7 @@
 
 <div class="viewer-bar">
   <div>
-    <div class="crumbs"><a id="crumb-course" href="index.html">Course</a> / <span data-i18n="viewer.note">note</span></div>
+    <div class="path"><a href="index.html" data-i18n="path.home">~</a> / <a href="courses.html" data-i18n="path.courses">courses</a> / <a id="crumb-course" href="courses.html" dir="ltr">…</a> / <b data-i18n="viewer.note">note</b></div>
     <h1 id="note-title" data-i18n="common.loading">Loading…</h1>
   </div>
   <div class="note-actions">
@@ -74,6 +75,7 @@
   <div class="footer-credit">© 2026 <span>retr0</span> <span data-i18n="footer.built">· built with plain HTML, CSS &amp; JS · no frameworks, no tracking</span></div>
 </footer>
 
+<script src="js/strings-en.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/main.js"></script>
 </body>

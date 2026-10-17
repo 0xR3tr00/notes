@@ -36,13 +36,16 @@ function setTheme(theme){
   updateThemeButton();
 }
 
+/* The button names the theme you would switch TO. Its label and aria-label are
+   set here (translated), not by data-i18n in the HTML — a static data-i18n would
+   be re-applied by the translation pass and always say "light". */
 function updateThemeButton(){
   const btn = document.querySelector('.theme-toggle');
   if(!btn) return;
   const light = getTheme() === 'light';
   btn.querySelector('.icon').textContent  = light ? '☾' : '☀';
-  btn.querySelector('.label').textContent = light ? 'dark' : 'light';
-  btn.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
+  btn.querySelector('.label').textContent = t(light ? 'theme.dark' : 'theme.light');
+  btn.setAttribute('aria-label', t(light ? 'theme.toDark' : 'theme.toLight'));
 }
 
 function initTheme(){
@@ -223,57 +226,72 @@ function courseMatches(course, q){
 /* ---- 4. Templates -----------------------------------------------------------
    Pure functions: data in, HTML string out. No DOM access, no side effects.
    That makes them easy to reason about and easy to reuse across pages.
-   Note the inline style="--course-accent: ..." — that's how each card gets
-   its own colour without generating per-course CSS.
+
+   The visual language is "the library as a file system": a course is a
+   directory (an index ROW, not a card), a note type is a folder, a note is a
+   file. Each level has its own shape so they are never confused.
+   The inline style="--course-accent: ..." sets the level colour per row
+   without generating per-course CSS.
 ---------------------------------------------------------------------------- */
 
-function courseCardHTML(course){
+/** A course, as one row of the course index. */
+function courseRowHTML(course){
   const count = course.notes.length;
-  const updated = count ? t('card.updated', { d: formatDate(latestDate(course)) }) : t('card.noNotes');
   // In Arabic, lead with the Arabic name; the English becomes the second line.
-  const arFirst = currentLang() === 'ar' && course.nameAr;
-  const title   = arFirst ? course.nameAr : course.name;
+  const arFirst  = currentLang() === 'ar' && course.nameAr;
+  const title    = arFirst ? course.nameAr : course.name;
   const subtitle = arFirst ? course.name : course.nameAr;
   return `
-    <a href="${courseUrl(course)}" class="course-card" style="--course-accent:${esc(course.color)}">
-      <div class="card-top">
-        <span class="tag">${esc(course.category)} · ${esc(course.code)}</span>
-        <span class="course-icon" aria-hidden="true">${esc(course.icon)}</span>
-      </div>
-      <h3${langAttrs(title)}>${esc(title)}</h3>
-      ${subtitle ? `<div class="alt-name"${langAttrs(subtitle)}>${esc(subtitle)}</div>` : ''}
-      <p${langAttrs(course.description)}>${esc(course.description)}</p>
-      ${arLine(course.descriptionAr)}
-      <div class="meta">
-        <span>${t('card.notesCount', { n: count })}</span><span>·</span><span>${esc(updated)}</span>
-      </div>
+    <a href="${courseUrl(course)}" class="course-row" style="--course-accent:${themeColor(course.color)}">
+      <span class="code" dir="ltr">${esc(course.code)}</span>
+      <span class="names">
+        <span class="title"${langAttrs(title)}>${esc(title)}</span>
+        ${subtitle ? `<span class="alt-name"${langAttrs(subtitle)}>${esc(subtitle)}</span>` : ''}
+      </span>
+      <span class="count">${t('card.notesCount', { n: count })}</span>
     </a>`;
 }
 
-/** One note row. `showCourse` adds a "in <course>" link — used on the homepage. */
-function noteItemHTML(note, course, { showCourse = false } = {}){
-  const tags = note.tags.map(t => `<span class="note-tag">${esc(t)}</span>`).join('');
+/**
+ * A note, as one file row. `showCourse` prefixes the course code — used where
+ * notes from many courses are mixed (home: recent + search results).
+ */
+function noteItemHTML(note, course, { showCourse = false, hideDesc = false } = {}){
+  // NB: `tag`, not `t` — `t` is the translation function.
+  const tags = note.tags.map(tag => `<span class="hashtag" dir="auto">#${esc(tag)}</span>`).join(' ');
   const courseLink = showCourse
-    ? `<a class="course-link" href="${courseUrl(course)}">${esc(course.code)}</a><span>·</span>`
+    ? `<a class="course-link" href="${courseUrl(course)}" dir="ltr">${esc(course.code)}</a><span aria-hidden="true">·</span>`
     : '';
   return `
-    <li class="note-item" style="--course-accent:${esc(course.color)}">
-      <div>
-        <h3${langAttrs(note.title)}><a href="${viewerUrl(course, note)}">${esc(note.title)}</a></h3>
+    <li class="file" style="--course-accent:${themeColor(course.color)}">
+      <div class="file-main">
+        <a class="file-title" href="${viewerUrl(course, note)}"${langAttrs(note.title)}>${esc(note.title)}</a>
         ${arLine(note.titleAr)}
-        <p${langAttrs(note.description)}>${esc(note.description)}</p>
+        ${note.description && !hideDesc ? `<p class="file-desc"${langAttrs(note.description)}>${esc(note.description)}</p>` : ''}
         ${arLine(note.descriptionAr)}
-        <div class="note-meta">
+        <div class="file-meta">
           ${courseLink}
+          <span>${t('file.pdf')}</span><span aria-hidden="true">·</span>
           <span>${formatDate(note.dateAdded)}</span>
-          ${tags}
+          ${tags ? `<span aria-hidden="true">·</span>${tags}` : ''}
         </div>
       </div>
-      <div class="note-actions">
-        <a class="btn btn-ghost btn-sm" href="${viewerUrl(course, note)}">${t('common.view')}</a>
-        <a class="btn btn-ghost btn-sm" href="${pdfUrl(note)}" download>${t('common.download')}</a>
+      <div class="file-acts">
+        <a href="${viewerUrl(course, note)}">${t('common.view')}</a>
+        <a href="${pdfUrl(note)}" download>${t('common.download')}</a>
       </div>
     </li>`;
+}
+
+/**
+ * Empty / loading / error states share one shape: a short statement and an
+ * optional hint that tells the student what to do next.
+ * kind: 'empty' | 'loading' | 'error'. `tag` lets it sit inside a <ul>.
+ */
+function stateHTML(kind, title, hint = '', tag = 'div'){
+  return `<${tag} class="state state-${kind}"${kind === 'error' ? ' role="alert"' : ''}>
+    <b>${esc(title)}</b>${hint ? `<span class="hint">${esc(hint)}</span>` : ''}
+  </${tag}>`;
 }
 
 /**
@@ -296,31 +314,37 @@ function linkCardHTML(link, course){
         <span class="play" aria-hidden="true">▶</span>
       </button>` : '';
   return `
-    <li class="link-card ${id ? 'is-video' : ''}" style="--course-accent:${esc(course.color)}">
+    <li class="link-card ${id ? 'is-video' : ''}" style="--course-accent:${themeColor(course.color)}">
       ${media}
       <div class="link-body">
         <h3${langAttrs(title)}><a href="${esc(link.url)}" target="_blank" rel="noopener">${esc(title)} <span aria-hidden="true">↗</span></a></h3>
         <p${langAttrs(desc)}>${esc(desc)}</p>
-        <div class="link-domain">${id ? 'youtube.com' : esc(domainOf(link.url))}${link.subject ? ` <span class="note-tag">${esc(link.subject)}</span>` : ''}</div>
+        <div class="link-domain" dir="ltr">${id ? 'youtube.com' : esc(domainOf(link.url))}${link.subject ? ` <span class="hashtag">#${esc(link.subject.toLowerCase())}</span>` : ''}</div>
       </div>
     </li>`;
 }
 
-/* The "Add a course" card is static for now. A function, not a constant, so it
-   picks up the current language each time it is rendered.
-   LATER (admin panel): link this to the admin "new course" form. */
-const addCourseHTML = () => `
-    <a href="index.html#contribute" class="course-card add">
-      <div>
-        <div class="plus" aria-hidden="true">+</div>
-        <div>${t('courses.addCourse')}</div>
-      </div>
-    </a>`;
+/* LATER (admin panel): an "add a course" entry point belongs in the admin UI,
+   not as a placeholder card on the public index — the old card linked to a
+   section that no longer exists, so it was removed in the redesign. */
 
 /* ---- 5. Pages --------------------------------------------------------------- */
 
 /** Colour for each year-level heading on the homepage (matches the cards). */
-const LEVEL_COLOR = { 1: '#F2A93B', 2: '#5FD3C4', 3: '#C98BF2', 4: '#F2765B' };
+const LEVEL_COLOR = { 1: 'var(--lvl1)', 2: 'var(--lvl2)', 3: 'var(--lvl3)', 4: 'var(--lvl4)' };
+
+/**
+ * The data files (courses.json, resources.json, curriculum*.json) carry colours
+ * as raw hex, chosen long ago for the dark theme. Rendering them directly would
+ * bypass the design tokens — wrong in light mode and unchecked for contrast.
+ * This maps each known data colour onto its theme token instead, so the data
+ * can stay as-is and every colour still comes from css/style.css.
+ */
+const DATA_COLOR_TOKENS = {
+  '#F2A93B': 'var(--lvl1)', '#5FD3C4': 'var(--lvl2)', '#C98BF2': 'var(--lvl3)',
+  '#F2765B': 'var(--lvl4)', '#7FA8D4': 'var(--science)',
+};
+const themeColor = hex => DATA_COLOR_TOKENS[String(hex || '').toUpperCase()] || 'var(--accent)';
 
 /**
  * Note types, in the order their sections appear on a course page.
@@ -339,22 +363,24 @@ const NOTE_TYPES = [
   { id: 'reference',   byTitle: true  },
   { id: 'other',       byTitle: false },
 ];
-/* Labels come from ui.json, so they follow the chosen language:
-   type.lecture -> "Lectures" / "المحاضرات". */
-const typeLabel = id => t('type.' + id);
-const subLabel  = tag => t('sub.' + tag);
+/* Folder labels follow the language: English uses file-system names
+   ("lectures", "past-exams") with a trailing slash added by the template;
+   Arabic uses the translated word and no slash (a slash after Arabic reads
+   as punctuation, not as a path). */
+const folderLabel    = id  => t('folder.' + id);
+const subfolderLabel = tag => t('subfolder.' + tag);
 
 /**
- * A row of toggle chips. `items` = [{ value, label, color }]. Renders into
- * `container`, calls `onChange` when the selection changes, and returns a
- * function giving the active value (or null). Click the active chip to clear.
- * Used for the level filter and the subject filter — same behaviour, one place.
+ * A segmented control of toggle buttons. `items` = [{ value, label }].
+ * Renders into `container`, calls `onChange` when the selection changes, and
+ * returns a function giving the active value (or null). Click the active
+ * button again to clear. Used for the level, subject and resource filters.
  */
 function initChipFilter(container, items, onChange){
   let active = null;
+  container.classList.add('seg');
   container.innerHTML = items.map(it =>
-    `<button type="button" class="tag-chip" aria-pressed="false" data-value="${esc(it.value)}"
-             style="--course-accent:${esc(it.color || '')}">${esc(it.label)}</button>`).join('');
+    `<button type="button" class="tag-chip" aria-pressed="false" data-value="${esc(it.value)}">${esc(it.label)}</button>`).join('');
   container.addEventListener('click', e => {
     const chip = e.target.closest('.tag-chip');
     if(!chip) return;
@@ -369,7 +395,7 @@ function initChipFilter(container, items, onChange){
 /** Level chips (100 / 200 / 300 / 400). Returns a getter for the active level as a number. */
 function initLevelFilter(container, courses, onChange){
   const levels = [...new Set(courses.map(c => c.level))].sort();
-  const get = initChipFilter(container, levels.map(l => ({ value: String(l), label: t('common.level', { n: l }), color: LEVEL_COLOR[l] })), onChange);
+  const get = initChipFilter(container, levels.map(l => ({ value: String(l), label: t('common.levelShort', { n: l }) })), onChange);
   return () => (get() === null ? null : Number(get()));
 }
 
@@ -382,7 +408,7 @@ function initSubjectFilter(container, courses, onChange){
   if(subjects.length < 2){ container.hidden = true; return () => null; }   // pointless with one subject
   return initChipFilter(container, subjects.map(sub => {
     const sample = courses.find(c => subjectOf(c) === sub);
-    return { value: sub, label: sub, color: sample.category === 'Science' ? sample.color : 'var(--accent2)' };
+    return { value: sub, label: sub, color: sample.category === 'Science' ? themeColor(sample.color) : 'var(--accent-2)' };
   }), onChange);
 }
 
@@ -391,12 +417,16 @@ function filterCourses(courses, level, subject){
   return courses.filter(c => (!level || c.level === level) && (!subject || subjectOf(c) === subject));
 }
 
-/** Course cards grouped by year level, each group under a heading. */
+/** The course index: rows grouped under one directory heading per year level. */
 function courseGridHTML(courses){
   const levels = [...new Set(courses.map(c => c.level))].sort();
   return levels.map(level => {
-    const cards = courses.filter(c => c.level === level).map(courseCardHTML).join('');
-    return `<h3 class="level-head" style="--course-accent:${esc(LEVEL_COLOR[level] || '')}">${esc(t('common.levelYear', { n: level }))}</h3>${cards}`;
+    const rows = courses.filter(c => c.level === level).map(courseRowHTML).join('');
+    return `
+      <section class="course-group" style="--course-accent:${LEVEL_COLOR[level] || 'var(--accent)'}">
+        <h3 class="dir-head">${esc(t('common.levelDir', { n: level }))} <span>· ${esc(t('common.yearN', { n: level }))}</span></h3>
+        ${rows}
+      </section>`;
   }).join('');
 }
 
@@ -410,7 +440,7 @@ function initHome(courses){
   // Recently added — newest notes across every course.
   $('#recent-list').innerHTML = recentNotes(courses, RECENT_N)
     .map(n => noteItemHTML(n, n.course, { showCourse: true }))
-    .join('') || `<li class="empty">No notes yet.</li>`;
+    .join('') || stateHTML('empty', t('card.noNotes'), '', 'li');
 
   const getLevel = initLevelFilter($('#level-filters'), courses, render);
   const getSubject = initSubjectFilter($('#subject-filters'), courses, render);
@@ -430,10 +460,10 @@ function initHome(courses){
     const hitNotes = allNotes(pool).filter(n => noteMatches(n, q))
       .sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
 
-    $('#results-courses').innerHTML = hitCourses.map(courseCardHTML).join('')
-      || `<div class="empty">${t('home.noCourses')}</div>`;
+    $('#results-courses').innerHTML = hitCourses.map(courseRowHTML).join('')
+      || stateHTML('empty', t('home.noCourses'), t('home.noResultsHint'));
     $('#results-notes').innerHTML = hitNotes.map(n => noteItemHTML(n, n.course, { showCourse: true })).join('')
-      || `<li class="empty">${t('home.noNotes')}</li>`;
+      || stateHTML('empty', t('home.noNotes'), '', 'li');
     $('#results-course-count').textContent = hitCourses.length;
     $('#results-note-count').textContent = hitNotes.length;
     results.hidden = false;
@@ -442,18 +472,18 @@ function initHome(courses){
   search.addEventListener('input', render);
   render();
 
-  // Terminal readout — real counts, so the hero is never out of date.
-  // NB: the loop variable is `line`, not `t` — `t` is the translation function.
-  const notes = allNotes(courses);
-  const links = courses.reduce((s, c) => s + (c.links || []).length, 0);
-  const latest = notes.map(n => n.dateAdded).sort().at(-1);
-  $('#terminal-stats').innerHTML = [
-    t('home.statCourses', { n: courses.length }),
-    t('home.statNotes',   { n: notes.length }),
-    t('home.statLinks',   { n: links }),
-    latest ? t('home.statUpdated', { d: formatDate(latest) }) : '',
-  ].filter(Boolean).map(line => `<div class="out">${esc(line)}</div>`).join('');
-  $('#start-courses-count').textContent = t('home.startBrowseSub', { n: courses.length });
+  // The terminal is the site's real navigation: `help` lists the commands,
+  // each a link. Replaces the old statistics readout and "Start here" cards.
+  const latest = allNotes(courses).map(n => n.dateAdded).sort().at(-1);
+  const cmds = [
+    ['courses.html',             '/courses',    t('home.cmdCourses', { n: courses.length })],
+    ['curriculum.html',          '/curriculum', t('home.cmdCurriculum')],
+    ['curriculum.html?mode=plan','/plan',       t('home.cmdPlan')],
+    ['resources.html',           '/resources',  t('home.cmdResources')],
+  ];
+  $('#terminal-cmds').innerHTML = cmds.map(([href, name, desc]) =>
+    `<a href="${href}">${name}</a><span dir="auto">${esc(desc)}</span>`).join('');
+  $('#terminal-updated').textContent = latest ? t('home.cmdUpdated', { d: formatDate(latest) }) : '';
 
   renderPlanBlock(courses);
 }
@@ -502,7 +532,7 @@ async function renderPlanBlock(courses){
     </div>
     <div class="dash">
       <div class="dash-card">
-        <span class="big">${p.credits}</span><span class="of">/ ${p.total}</span>
+        <div class="figure"><span class="big">${p.credits}</span><span class="of">/ ${p.total}</span></div>
         <div class="label">${t('home.planCredits')}</div>
       </div>
       ${p.hasGraph ? `
@@ -536,8 +566,7 @@ function initCourses(courses){
     const filtering = q || level || subject;
     const shown = filterCourses(courses, level, subject).filter(c => courseMatches(c, q));
 
-    grid.innerHTML = (courseGridHTML(shown) || `<div class="empty">${t('courses.none')}</div>`)
-      + (filtering ? '' : addCourseHTML());
+    grid.innerHTML = courseGridHTML(shown) || stateHTML('empty', t('courses.none'), t('courses.noneHint'));
     count.textContent = filtering ? t('courses.countOf', { n: shown.length, total: courses.length }) : '';
   }
 
@@ -549,39 +578,46 @@ function initCourses(courses){
 function initCourse(courses){
   const course = courses.find(c => c.id === param('course'));
   if(!course){
-    $('#course-main').innerHTML = `
-      <div class="section"><div class="empty">
-        ${t('course.notFound')} <a href="index.html">${t('course.backAll')}</a>.
-      </div></div>`;
+    $('#course-main').innerHTML = `<div class="section">${stateHTML('empty', t('course.notFound'))}
+      <p class="state-link"><a href="courses.html">${t('course.backAll')}</a></p></div>`;
     return;
   }
 
   document.title = `${course.name} — Notes++`;
+  $('#course-main').style.setProperty('--course-accent', themeColor(course.color));   // folders, links etc. inherit it
 
-  // Header
-  const hero = $('#course-hero');
-  hero.style.setProperty('--course-accent', course.color);
-  $('#course-main').style.setProperty('--course-accent', course.color);   // folders, links etc. inherit it
-  $('#course-icon').textContent = course.icon;
-  $('#course-code').textContent = `${course.category} · ${course.code}`;
+  // Location as a path: ~ / courses / cs201
+  $('#course-path').textContent = course.id;
 
   // In Arabic, lead with the Arabic name and keep the English as the second line.
   const arabicFirst = currentLang() === 'ar' && course.nameAr;
   $('#course-name').textContent = arabicFirst ? course.nameAr : course.name;
   $('#course-name').setAttribute('dir', 'auto');
+  $('#course-name-ar').innerHTML = arabicFirst
+    ? `<div class="ar" dir="ltr" lang="en">${esc(course.name)}</div>`
+    : arLine(course.nameAr);
   $('#course-desc').textContent = course.descriptionAr && arabicFirst
     ? course.descriptionAr : course.description;
   $('#course-desc').setAttribute('dir', 'auto');
-  $('#course-name-ar').innerHTML = arabicFirst
-    ? `<div class="ar" dir="ltr" lang="en">${esc(course.name)}</div>`
-    : arLine(course.nameAr) + arLine(course.descriptionAr);
 
-  // Tag filter chips: one per unique tag in this course, in alphabetical order.
+  // Facts as label/value pairs — everything here comes from courses.json.
+  const latest = latestDate(course);
+  const facts = [
+    ['facts.code',  `<span dir="ltr">${esc(course.code)}</span>`],
+    ['facts.type',  esc(t('cat.' + course.category))],
+    ['facts.level', esc(`${t('common.level', { n: course.level })} · ${t('common.yearN', { n: course.level })}`)],
+    ['facts.files', String(course.notes.length)],
+    ['facts.links', String((course.links || []).length)],
+    latest ? ['facts.updated', esc(formatDate(latest))] : null,
+  ].filter(Boolean);
+  $('#course-facts').innerHTML = facts.map(([k, v]) => `<dt>${t(k)}</dt><dd>${v}</dd>`).join('');
+
+  // Tag toggles: one per unique tag, alphabetical, rendered as plain #words.
   // NB: the loop variable is `tag` — `t` is the translation function.
   const tags = [...new Set(course.notes.flatMap(n => n.tags))].sort();
   const filters = $('#tag-filters');
   filters.innerHTML = tags
-    .map(tag => `<button type="button" class="tag-chip" aria-pressed="false" data-tag="${esc(tag)}" dir="auto">${esc(tag)}</button>`)
+    .map(tag => `<button type="button" class="tag-toggle" aria-pressed="false" data-tag="${esc(tag)}" dir="auto">#${esc(tag)}</button>`)
     .join('');
 
   const groups = $('#note-groups');
@@ -604,9 +640,16 @@ function initCourse(courses){
     // when the visitor is searching or has a tag picked, every folder opens so
     // the matches are visible. <details>/<summary> is native HTML: keyboard
     // accessible and screen-reader friendly with no JavaScript.
-    const known = NOTE_TYPES.map(t => t.id);
+    const known = NOTE_TYPES.map(type => type.id);
     const filtering = Boolean(q || activeTag);
-    const list = items => `<ul class="note-list">${items.map(n => noteItemHTML(n, course)).join('')}</ul>`;
+    // A description identical to the one directly above is not repeated: 19
+    // lectures by the same lecturer read as one run instead of 19 copies of
+    // the same sentence. The first of each run still shows it.
+    const list = items => `<ul class="note-list">${items.map((n, i) =>
+      noteItemHTML(n, course, { hideDesc: i > 0 && n.description === items[i - 1].description })).join('')}</ul>`;
+    // A folder line: "▸ lectures/ 27". The slash is its own span so RTL can drop it.
+    const summary = (label, n) =>
+      `<summary><span class="folder-name">${esc(label)}</span><span class="slash" aria-hidden="true">/</span> <span class="count">${n}</span></summary>`;
 
     groups.innerHTML = NOTE_TYPES.map(type => {
       const items = shown
@@ -617,38 +660,40 @@ function initCourse(courses){
       let body;
       if(type.subfolders){
         // Split into sub-folders by tag; anything unmatched goes to "Other".
-        const buckets = type.subfolders.map(tag => ({ tag, label: subLabel(tag), items: [] }));
+        const buckets = type.subfolders.map(tag => ({ tag, label: subfolderLabel(tag), items: [] }));
         const rest = [];
         for(const n of items){
           const b = buckets.find(sf => n.tags.includes(sf.tag));
           (b ? b.items : rest).push(n);
         }
-        if(rest.length) buckets.push({ label: subLabel('other'), items: rest });
+        if(rest.length) buckets.push({ label: subfolderLabel('other'), items: rest });
         body = buckets.filter(b => b.items.length).map(b => `
           <details class="folder sub" ${filtering ? 'open' : ''}>
-            <summary><span class="folder-icon" aria-hidden="true"></span>${esc(b.label)} <span class="count">${b.items.length}</span></summary>
-            ${list(b.items)}
+            ${summary(b.label, b.items.length)}
+            <div class="files">${list(b.items)}</div>
           </details>`).join('');
       }else{
         body = list(items);
       }
       return `
         <details class="folder" ${filtering ? 'open' : ''}>
-          <summary><span class="folder-icon" aria-hidden="true"></span>${esc(typeLabel(type.id))} <span class="count">${items.length}</span></summary>
-          ${body}
+          ${summary(folderLabel(type.id), items.length)}
+          <div class="files">${body}</div>
         </details>`;
-    }).join('') || `<div class="empty">${course.notes.length ? t('course.noMatch') : t('course.noPdfs')}</div>`;
+    }).join('') || (course.notes.length
+      ? stateHTML('empty', t('course.noMatch'), t('course.noMatchHint'))
+      : stateHTML('empty', t('course.noPdfs')));
 
     count.textContent = t('course.countOf', { n: shown.length, total: course.notes.length });
   }
 
-  // Clicking a chip toggles it; clicking the active chip clears the filter.
-  // aria-pressed tells screen readers (and our CSS) which chip is active.
+  // Clicking a tag toggles it; clicking the active tag clears the filter.
+  // aria-pressed tells screen readers (and our CSS) which tag is active.
   filters.addEventListener('click', e => {
-    const chip = e.target.closest('.tag-chip');
+    const chip = e.target.closest('.tag-toggle');
     if(!chip) return;
     activeTag = activeTag === chip.dataset.tag ? null : chip.dataset.tag;
-    filters.querySelectorAll('.tag-chip')
+    filters.querySelectorAll('.tag-toggle')
       .forEach(c => c.setAttribute('aria-pressed', String(c.dataset.tag === activeTag)));
     render();
   });
@@ -664,7 +709,7 @@ function initLinks(course){
   const links = course.links || [];
   const list = $('#link-list');
   list.innerHTML = links.map(l => linkCardHTML(l, course)).join('')
-    || `<li class="empty">${t('course.noLinks')}</li>`;
+    || stateHTML('empty', t('course.noLinks'), '', 'li');
   wireYouTube(list);
 }
 
@@ -693,14 +738,13 @@ function initViewer(courses){
 
   if(!note){
     $('#viewer-main').innerHTML = `
-      <div class="section"><div class="empty">
-        ${t('viewer.noteNotFound')} <a href="index.html">${t('course.backAll')}</a>.
-      </div></div>`;
+      <div class="section">${stateHTML('empty', t('viewer.noteNotFound'))}
+        <p class="state-link"><a href="courses.html">${t('course.backAll')}</a></p></div>`;
     return;
   }
 
   document.title = `${note.title} — ${course.name}`;
-  $('#crumb-course').textContent = course.name;
+  $('#crumb-course').textContent = course.id;     // path segment: ~ / courses / cs201
   $('#crumb-course').href = courseUrl(course);
   $('#note-title').textContent = note.title;
 
@@ -727,7 +771,7 @@ async function initResources(){
   // Subject chips from whatever `subject` values the data uses (CS, MATH, MISC…).
   const subjects = [...new Set(allLinks.map(l => l.subject || 'MISC'))].sort();
   const getSubject = initChipFilter($('#subject-filters'),
-    subjects.map(sub => ({ value: sub, label: sub, color: sub === 'MATH' ? '#7FA8D4' : sub === 'CS' ? 'var(--accent2)' : 'var(--muted)' })),
+    subjects.map(sub => ({ value: sub, label: sub, color: sub === 'MATH' ? 'var(--science)' : sub === 'CS' ? 'var(--accent-2)' : 'var(--text-2)' })),
     render);
 
   function render(){
@@ -737,9 +781,9 @@ async function initResources(){
       .filter(g => g.links.length);              // hide groups with nothing left
     box.innerHTML = shownGroups.map(g => `
       <section class="resource-group">
-        <h3 class="group-head" style="--course-accent:${esc(g.color)}" dir="auto">${esc(currentLang() === 'ar' && g.labelAr ? g.labelAr : g.label)} <span>${g.links.length}</span></h3>
+        <h3 class="group-head" style="--course-accent:${themeColor(g.color)}" dir="auto">${esc(currentLang() === 'ar' && g.labelAr ? g.labelAr : g.label)} <span>${g.links.length}</span></h3>
         <ul class="link-grid">${g.links.map(l => linkCardHTML(l, { color: g.color })).join('')}</ul>
-      </section>`).join('') || `<div class="empty">${esc(t('resources.noneTagged', { tag: subject }))}</div>`;
+      </section>`).join('') || stateHTML('empty', t('resources.noneTagged', { tag: subject }));
     const shown = shownGroups.reduce((s, g) => s + g.links.length, 0);
     $('#search-count').textContent = subject ? t('resources.countOf', { n: shown, total: allLinks.length }) : '';
   }
@@ -758,6 +802,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initTheme();
   // Strings first: every init() below renders labels through t().
   await initI18n();
+  updateThemeButton();   // now that the language is known, label it in that language
 
   const init = PAGES[document.body.dataset.page];
   if(!init) return;
@@ -767,12 +812,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }catch(err){
     console.error(err);
     const main = $('main');
-    if(main) main.innerHTML = `
-      <div class="section"><div class="empty">
-        Couldn't load course data.<br><br>
-        If you opened this file directly (file://), serve it instead:<br>
-        <code>python -m http.server</code> then open http://localhost:8000
-      </div></div>`;
+    if(main) main.innerHTML = `<div class="section">${stateHTML('error', t('state.errorTitle'), t('state.errorHint'))}</div>`;
   }
 });
 

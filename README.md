@@ -17,7 +17,7 @@ then open <http://localhost:8000>. GitHub Pages serves it the same way, so nothi
 
 ```
 index.html         home: search (live results), 'Your plan' dashboard, start-here cards, 5 recent notes
-courses.html       all courses grouped by year, with search + level filter
+courses.html       the course index: rows grouped by year, with search + subject/level filters
 course.html        one course — driven by ?course=<id>
 curriculum.html    curriculum explorer for both catalog years (see below)
 resources.html     general links (department site, study sites) from data/resources.json
@@ -28,7 +28,8 @@ js/main.js         all behaviour; one init function per page
 js/curriculum.js   the curriculum explorer
 data/courses.json  all course + note + course-link content
 data/resources.json  general (non-course) links, grouped
-data/ui.json       every interface string, in English and Arabic
+js/strings-en.js   every interface string in English (the built-in default)
+data/ui.json       translations of those strings (Arabic)
 fonts/             Watad (Arabic web font), self-hosted
 img/               the Notes++ wordmark, as outlined SVG + PNG
 pdfs/              the PDF files referenced by courses.json
@@ -76,6 +77,29 @@ tools/make_wordmark.py rebuilds the outlined wordmark (build-time only)
 
 Dates are ISO strings on purpose: they sort correctly with a plain string compare.
 
+## Design system
+
+All design decisions live in the token block at the top of `css/style.css`;
+components only ever reference tokens, never raw colours or sizes.
+
+- **Idea:** the library as a file system. A course is a directory (a row in the
+  course index), a note type is a folder (`lectures/ 27`), a note is a file
+  (title · `pdf · date · #tags` · view / download), and location reads as a path
+  (`~ / courses / cs201`). Each level has its own shape so they are never confused.
+- **Colour:** warm near-black (no blue) with amber/teal accents on a plain
+  background; light mode is warm paper with near-black text. Solid
+  surfaces, no shadows, no translucency. Three text levels; every text token passes WCAG AA (4.5:1) on every
+  surface in both themes. Year-level colours (`--lvl1…4`, `--science`) are tokens:
+  the hex colours in the JSON files are mapped onto them by `themeColor()` in
+  `main.js`, so the data never bypasses the theme.
+- **Type:** six sizes (`--fs-label` 11 → `--fs-h1` 26). JetBrains Mono for interface,
+  Inter for reading, Watad for Arabic (in every font stack as a per-glyph fallback).
+- **Shape:** 3px radius at most, dashed borders for structure, segmented controls
+  for filters, plain `#words` for tags. No pills, cards-for-lists, coloured left
+  borders or icon decoration.
+- **States:** one component (`stateHTML()` / `.state`) for empty, loading and error,
+  always with a hint about what to do next.
+
 ## Curriculum
 
 `curriculum.html` serves two catalog years from one script (`js/curriculum.js`):
@@ -99,7 +123,8 @@ choice is saved in localStorage and applied before the first paint, so nothing f
 
 | Piece | Where |
 |---|---|
-| Every UI string, both languages | `data/ui.json` (~210 keys) |
+| English copy (built-in default) | `js/strings-en.js` (~210 keys) |
+| Translations (Arabic) | `data/ui.json`, same keys |
 | Translation engine, toggle, RTL switch | `js/i18n.js` |
 | Static markup | `data-i18n="key"` attributes in the HTML |
 | Generated markup | `t('key')` calls in `main.js` / `curriculum.js` |
@@ -109,9 +134,12 @@ choice is saved in localStorage and applied before the first paint, so nothing f
 The English left in the HTML is a **fallback**, not dead weight: if JavaScript fails,
 the page still reads correctly in English.
 
+**Adding a string:** add it to `js/strings-en.js` and its translation to `data/ui.json`.
+
 **Adding a language:** add a top-level key to `ui.json` with the same key set, plus an
-entry in `_languages`. Nothing else changes. Missing keys fall back to English, so a
-half-finished translation degrades gracefully instead of showing blanks.
+entry in `_languages`. Missing keys fall back to English, so a half-finished translation
+degrades gracefully. English ships as code, not data: if `ui.json` is missing or has a
+typo, the site runs in English and the language toggle hides — it never shows raw keys.
 
 **Plurals:** add a `key_one` variant where a language needs a singular ("1 note" vs
 "3 notes"). It is used only when the *current* language defines it, so a missing Arabic
@@ -160,7 +188,7 @@ python tools/make_wordmark.py
 ```
 
 The script shapes the text with HarfBuzz, then emits each glyph as an SVG path. Output:
-cream ink for dark backgrounds, navy for light, plus PNGs. The nav picks the right one
+cream ink for dark backgrounds, near-black for light, plus PNGs. The nav picks the right one
 via a CSS theme swap. English-only by choice.
 
 ## Later phases (not built yet)

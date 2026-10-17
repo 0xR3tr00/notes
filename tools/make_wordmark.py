@@ -134,7 +134,7 @@ def main():
         # Navy-ink twin for light backgrounds. An <img> cannot inherit page
         # colour, so the stylesheet swaps between these two files by theme.
         dark_name = name.replace(".svg", "-dark.svg")
-        dark = data.replace(INK, "#172B40")
+        dark = data.replace(INK, "#1D1B18")
         with open(os.path.join(OUT, dark_name), "w", encoding="utf-8") as f:
             f.write(dark)
         print("wrote img/" + dark_name)
@@ -150,7 +150,7 @@ def write_pngs(width=1200):
         print("skipped PNGs (pip install pymupdf)"); return
     for base in ("wordmark",):
         src = os.path.join(OUT, base + ".svg")
-        for suffix, ink, bg in (("", CREAM, None), ("-dark", "#172B40", None)):
+        for suffix, ink, bg in (("", CREAM, None), ("-dark", "#1D1B18", None)):
             svg_txt = open(src, encoding="utf-8").read().replace(INK, ink)
             doc = pymupdf.open(stream=svg_txt.encode(), filetype="svg")
             page = doc[0]

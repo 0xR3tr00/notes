@@ -6,7 +6,9 @@
 
    How it works
    ------------
-   1. data/ui.json holds every visible string, keyed, once per language.
+   1. js/strings-en.js holds the English copy (EN_STRINGS) — the built-in
+      default, always present. data/ui.json holds the translations. If ui.json
+      fails to load, the site runs in English and the language toggle hides.
    2. Static HTML marks translatable bits with data-i18n attributes:
         <h2 data-i18n="courses.title">Courses</h2>
         <input data-i18n-placeholder="common.search">
@@ -27,7 +29,8 @@ const UI_URL = 'data/ui.json';
 const LANG_KEY = 'lang';
 
 let LANGS = [{ code: 'en', label: 'English', dir: 'ltr', short: 'EN' }];
-let STRINGS = {};          // { en: {...}, ar: {...} }
+// English is always present (js/strings-en.js); translations are merged in by initI18n().
+let STRINGS = { en: (typeof EN_STRINGS !== 'undefined') ? EN_STRINGS : {} };
 let LANG = 'en';
 
 /** The language actually in use, falling back to English if the saved one is gone. */
@@ -122,17 +125,18 @@ function initI18n(){
 }
 
 async function doInitI18n(){
+  // Translations are optional. On any failure (404, bad JSON, offline) we keep
+  // the built-in English and carry on — English never depends on this fetch.
   try{
     const res = await fetch(UI_URL);
-    if(res.ok){
-      const data = await res.json();
-      LANGS = data._languages || LANGS;
-      STRINGS = Object.fromEntries(
-        Object.entries(data).filter(([k]) => !k.startsWith('_'))
-      );
-    }
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const translations = Object.entries(data).filter(([k]) => !k.startsWith('_') && k !== 'en');
+    for(const [code, table] of translations) STRINGS[code] = table;
+    // Only advertise languages we actually have strings for.
+    if(Array.isArray(data._languages)) LANGS = data._languages.filter(l => STRINGS[l.code]);
   }catch(err){
-    console.error('i18n: could not load', UI_URL, err);   // English fallback still works
+    console.warn(`i18n: translations unavailable (${UI_URL}: ${err.message}) — using English.`);
   }
   let saved = null;
   try{ saved = localStorage.getItem(LANG_KEY); }catch(_){}
@@ -144,6 +148,8 @@ async function doInitI18n(){
   applyTranslations();
 
   const btn = document.querySelector('.lang-toggle');
+  // Nothing to switch to (translations failed to load) -> no toggle.
+  if(btn && LANGS.length < 2){ btn.closest('li')?.setAttribute('hidden', ''); return; }
   if(btn){
     btn.addEventListener('click', () => {
       const next = LANGS.find(l => l.code !== currentLang()) || LANGS[0];

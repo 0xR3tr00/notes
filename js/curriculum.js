@@ -49,7 +49,9 @@ let NOTES_BY_CODE = new Map();  // "CS201" -> course from courses.json (for the 
 const hasGraph = data => !(data.dataStatus && data.dataStatus.prerequisitesSourced === false);
 /** Category metadata, with the Arabic label swapped in when Arabic is active. */
 function catOf(c){
-  const cat = DATA.categories[c.category] || { label: c.category, accent: '#888' };
+  const raw = DATA.categories[c.category] || { label: c.category, accent: '' };
+  // accent: the data hex mapped onto its theme token (see themeColor in main.js)
+  const cat = { ...raw, accent: themeColor(raw.accent) };
   return (currentLang() === 'ar' && cat.labelAr) ? { ...cat, label: cat.labelAr } : cat;
 }
 
@@ -146,7 +148,7 @@ function nodeHTML(c){
   const hasNotes = NOTES_BY_CODE.has(c.short);
   return `
     <button type="button" class="cnode ${unlocks >= 5 ? 'choke' : ''}" data-id="${esc(c.id)}"
-            style="--cat:${esc(catOf(c).accent)}"
+            style="--cat:${catOf(c).accent}"
             aria-label="${esc(c.short)} ${esc(c.name)}, ${c.credits} credits${unlocks ? `, unlocks ${unlocks}` : ''}">
       <span class="code" dir="ltr">${esc(c.short)}${c.conditions?.length ? ` <span class="cond" title="${t('cur.legendCondition')}">!</span>` : ''}</span>
       <span class="name" dir="auto">${esc(currentLang() === 'ar' && c.nameAr ? c.nameAr : c.name)}</span>
@@ -200,7 +202,7 @@ function renderList(){
 function renderLegend(){
   const ar = currentLang() === 'ar';
   const cats = Object.values(DATA.categories).map(c =>
-    `<span class="legend-item"><i style="background:${esc(c.accent)}"></i>${esc(ar && c.labelAr ? c.labelAr : c.label)}</span>`).join('');
+    `<span class="legend-item"><i style="background:${themeColor(c.accent)}"></i>${esc(ar && c.labelAr ? c.labelAr : c.label)}</span>`).join('');
   $('#legend').innerHTML = cats + `
     <span class="legend-item"><i class="legend-choke"></i>${t('cur.legendChoke')}</span>
     <span class="legend-item"><i class="legend-dash"></i>${t('cur.legendDashed')}</span>
@@ -241,18 +243,18 @@ function applyHighlight(){
 function courseChip(id){
   const c = BY_ID.get(id);
   if(!c) return `<span class="note-tag">${esc(id)}</span>`;
-  return `<button type="button" class="note-tag chip-link" data-jump="${esc(id)}" style="--cat:${esc(catOf(c).accent)}">${esc(c.short)}</button>`;
+  return `<button type="button" class="note-tag chip-link" data-jump="${esc(id)}" style="--cat:${catOf(c).accent}">${esc(c.short)}</button>`;
 }
 
 function renderDetail(){
   const box = $('#detail');
-  if(!selected){ box.innerHTML = `<div class="empty">${t('cur.selectCourse')}</div>`; return; }
+  if(!selected){ box.innerHTML = stateHTML('empty', t('cur.selectCourse')); return; }
   const c = BY_ID.get(selected), unlocks = UNLOCKS.get(c.id), notes = NOTES_BY_CODE.get(c.short);
   const status = mode === 'plan' ? availability(c.id) : null;
   // In Arabic, lead with the Arabic course name and keep English underneath.
   const arFirst = currentLang() === 'ar' && c.nameAr;
   box.innerHTML = `
-    <div class="detail-head" style="--cat:${esc(catOf(c).accent)}">
+    <div class="detail-head" style="--cat:${catOf(c).accent}">
       <div class="code">${esc(c.short)} · ${esc(c.id)}</div>
       <h3 dir="auto">${esc(arFirst ? c.nameAr : c.name)}</h3>
       ${arFirst ? `<div class="ar" lang="en" dir="ltr">${esc(c.name)}</div>`
@@ -352,7 +354,7 @@ function renderChecklist(){
     const total = courses.reduce((s, c) => s + c.credits, 0);
     const done  = courses.filter(c => passed.has(c.id)).reduce((s, c) => s + c.credits, 0);
     return `
-      <section class="check-group" style="--cat:${esc(cat.accent)}">
+      <section class="check-group" style="--cat:${themeColor(cat.accent)}">
         <h3 class="group-head">${esc(currentLang() === 'ar' && cat.labelAr ? cat.labelAr : cat.label)} <span>${done} / ${total} ${t('common.credits')}</span></h3>
         <ul class="check-list">
           ${courses.map(c => {
@@ -418,7 +420,7 @@ function renderStudyPlan(){
                 const c = BY_ID.get(slot);
                 const label = currentLang() === 'ar' && c?.nameAr ? c.nameAr : c?.name;
                 return c
-                  ? `<li class="slot" style="--cat:${esc(catOf(c).accent)}"><button type="button" class="slot-link" data-jump="${esc(c.id)}" dir="auto"><b>${esc(c.short)}</b> ${esc(label)}</button><span>${c.credits}</span></li>`
+                  ? `<li class="slot" style="--cat:${catOf(c).accent}"><button type="button" class="slot-link" data-jump="${esc(c.id)}" dir="auto"><b>${esc(c.short)}</b> ${esc(label)}</button><span>${c.credits}</span></li>`
                   : `<li class="slot placeholder"><span>${esc(slot)}</span></li>`;
               }).join('')}</ul>
             </div>`).join('')}
@@ -438,7 +440,7 @@ function renderStudyPlan(){
 ---------------------------------------------------------------------------- */
 function renderCompare(){
   const [oldC, newC] = [ALL.get('2018'), ALL.get('2024')];
-  if(!oldC || !newC){ $('#compare').innerHTML = `<div class="empty">${t('cur.bothNeeded')}</div>`; return; }
+  if(!oldC || !newC){ $('#compare').innerHTML = stateHTML('empty', t('cur.bothNeeded')); return; }
   // Ignore cosmetic spelling differences ("&" vs "and", "CS" vs "Computer Science").
   const norm = n => n.toLowerCase().replace(/&/g, 'and').replace(/cs/g, 'computer science').replace(/\s+/g, ' ').trim();
   const sameName = (a, b) => norm(a) === norm(b);
@@ -638,6 +640,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initI18n();          // strings before anything renders
   initCurriculum().catch(err => {
     console.error(err);
-    $('main').innerHTML = `<div class="section"><div class="empty">${t('cur.loadFail')}</div></div>`;
+    $('main').innerHTML = `<div class="section">${stateHTML('error', t('cur.loadFail'))}</div>`;
   });
 });
